@@ -1,51 +1,17 @@
-# Elevator Simulation
 
-## Project Overview
+# Console UI Design Notes
 
-The Elevator Simulation System is a console application developed in C# that simulates the movement of elevators within a large building. The primary goal is to optimize passenger transportation efficiently while adhering to Object-Oriented Programming (OOP) principles for modularity and maintainability.
+## Screen Layout and Organization
 
-### Required Features:
-The console application will include the following key features:
+Organize the screen into sections: 
+- one for status displays, 
+- one for showing controls,
+- one for logs, 
+- and one for command input.
 
-1. Real-Time Elevator Status:
+## UI Examples:
 
-    Display the real-time status of each elevator, including its current floor, direction of movement, whether it's in motion or stationary, and the number of passengers it is carrying.
-    
-2. Interactive Elevator Control:
-
-    Allow users to interact with the elevators through the console application. Users should be able
-    to call an elevator to a specific floor and indicate the number of passengers waiting on each floor.
-
-3. Multiple Floors and Elevators Support
-    
-    Design the application to accommodate buildings with multiple floors and multiple elevators.
-    Ensure that elevators can efficiently move between different floors.
-
-4. Efficient Elevator Dispatching:
-
-    Implement an algorithm that efficiently directs the nearest available elevator to respond to an
-    elevator request. Minimize wait times for passengers and optimize elevator usage.
-
-5. Passenger Limit Handling:
-
-    Consider the maximum passenger limit for each elevator. Prevent the elevator from becoming
-    overloaded and handle scenarios where additional elevators might be required.
-
-6. Consideration for Different Elevator Types:
-
-    Although the challenge focuses on passenger elevators, consider the existence of other elevator
-    types, such as high-speed elevators, glass elevators, and freight elevators. Plan the application's
-    architecture to accommodate future extension for these types.
-
-7. Real-Time Operation:
-
-    Ensure that the console application operates in real-time, providing immediate responses to user
-    interactions and accurately reflecting elevator movements and status.
-
-
-## Console UI Design
-
-### Sim Setup
+### Example Sim Setup
 ```
 -------------------------------------------------
 | Sim Setup Controls:                           |
@@ -54,12 +20,41 @@ The console application will include the following key features:
 | Elevators: 3                                  |
 | Timing: 1000 (millisecs/step)                 |
 | Sim: start                                    |
-|                                               |
 -------------------------------------------------
 ```
 
-### Example Realtime Console Output - Standard Approach
-- This approach follows the spec closely: "Users should be able to call an elevator to a specific floor and indicate the number of passengers waiting on each floor." 
+### Example Realtime Console Output - Approach 1
+```
+-------------------------------------------------
+| Elevator Status:                              |
+|                                               |
+| [1] Floor 5 ↑ | [2] Floor 3 - | [3] Floor 9 ↓ |
+|                                               |
+|-----------------------------------------------|
+| Controls:                                     |
+|                                               |
+| Floor y Call [Up/Down]                        |
+| Floor y Cancel [Up/Down]                      |   
+| Elevator x Press Floor y                      |
+| Elevator x Cancel Floor y                     |
+|                                               |
+|-----------------------------------------------|
+| Log:                                          |
+|                                               |
+| Floor 1: Up Call Requested                    |
+| Elevator 1: Passenger Enters                  |
+| Elevator 1: Passenger Requests Floor 6        |
+| Elevator 2: arrived at Floor 3                |
+| Elevator 1: moving to Floor 6                 |
+-------------------------------------------------
+
+Command > _
+
+```
+### Example Realtime Console Output - Approach 2
+
+- Approach 2 Follows the spec more precisely:
+- "Users should be able to call an elevator to a specific floor and indicate the number of passengers waiting on each floor." 
 
 Process: 
   - User enters floor number and direction button requested (up/down) with number of passengers waiting on that floor.
@@ -114,16 +109,15 @@ The Commands above are:
 - Close: elevator 1
 
 
-### Example Realtime Console Output - Sim Goal-Driven Approach
+### Example Realtime Console Output - Sim Goal-Driven Approach 3
 Process:
-- This approach allows the Sim to operate more smoothly using less user input.
+- Approach 3 allows the Sim to operate more smoothly
 - User enters Floor Call giving Passengers and Destinations.
   - eg: Call: Floor 3, 2 People, Floor 5
 - User can update Passenger Destinations by number of Passengers.
   - eg: Change: Elevator 1, Floors 5 to 6, 2 People
 - The sim handles the Passenger behaviour and Elevator movement.
 - The Sim will automatically load Passengers into Elevators and move them to their destination floors. 
-- This does not follow the letter of the spec, so will use it as an alternative approach, while keeping the first approach as the standard.
 
 Output:
 ```
@@ -162,3 +156,39 @@ The Commands above are:
 - Call: floor 3, 2 people, floor 5
 - Call: floor 3, 2 people, floor 6
 
+
+
+## Other Standard Features:
+
+### Error Handling
+Display clear error messages if a user enters an invalid command.
+
+
+## Additional Features:
+
+### Advanced Error Handling Messages
+Provide suggestions for correct commands when an error occurs.
+
+### Interactive Menus
+For settings or configurations, provide interactive menus that users can navigate using keyboard input.
+Use numbers or key letters to select options from the menu.
+
+### Color-Coded Output
+Use different colors for different types of messages or elevator statuses 
+Ensure that the color scheme is consistent and intuitive.
+
+### Simulation Controls
+Implement controls for starting, pausing, or stopping the simulation.
+Allow users to step through the simulation one action at a time for detailed observation.
+
+```
+-------------------------------------------------
+| Sim Start                                     |
+| Sim Pause                                     |
+| Sim Resume                                    |
+| Sim Stop                                      |
+| Sim Restart                                   |
+| Sim Step                                      |
+|                                               |
+-------------------------------------------------
+```
