@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34310.174
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElevatorSim.ConsoleUI", "ElevatorSim.ConsoleUI\ElevatorSim.ConsoleUI.csproj", "{F454E457-D85F-44C1-B64A-C0A7AA4E0881}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F454E457-D85F-44C1-B64A-C0A7AA4E0881}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F454E457-D85F-44C1-B64A-C0A7AA4E0881}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F454E457-D85F-44C1-B64A-C0A7AA4E0881}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F454E457-D85F-44C1-B64A-C0A7AA4E0881}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AF59BE95-7448-4548-8DAD-E028C3486566}
+	EndGlobalSection
+EndGlobal
