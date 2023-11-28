@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34310.174
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElevatorSim.ConsoleUI", "ElevatorSim.ConsoleUI\ElevatorSim.ConsoleUI.csproj", "{F454E457-D85F-44C1-B64A-C0A7AA4E0881}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElevatorSim.ConsoleUI", "ElevatorSim.ConsoleUI\ElevatorSim.ConsoleUI.csproj", "{F454E457-D85F-44C1-B64A-C0A7AA4E0881}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElevatorSim.Core", "ElevatorSim.Core\ElevatorSim.Core.csproj", "{D7F8A68B-1209-4EF5-8679-DB7CA9407699}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElevatorSim.Core.Tests", "..\tests\ElevatorSim.Core.Tests\ElevatorSim.Core.Tests.csproj", "{235891F4-0822-4EE1-925A-D16CC68D7792}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{F454E457-D85F-44C1-B64A-C0A7AA4E0881}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F454E457-D85F-44C1-B64A-C0A7AA4E0881}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F454E457-D85F-44C1-B64A-C0A7AA4E0881}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7F8A68B-1209-4EF5-8679-DB7CA9407699}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7F8A68B-1209-4EF5-8679-DB7CA9407699}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7F8A68B-1209-4EF5-8679-DB7CA9407699}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7F8A68B-1209-4EF5-8679-DB7CA9407699}.Release|Any CPU.Build.0 = Release|Any CPU
+		{235891F4-0822-4EE1-925A-D16CC68D7792}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{235891F4-0822-4EE1-925A-D16CC68D7792}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{235891F4-0822-4EE1-925A-D16CC68D7792}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{235891F4-0822-4EE1-925A-D16CC68D7792}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
