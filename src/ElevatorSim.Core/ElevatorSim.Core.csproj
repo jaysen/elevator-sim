@@ -7,8 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Interfaces\" />
-    <Folder Include="Enums\" />
     <Folder Include="Services\Interfaces\" />
     <Folder Include="Strategies\Interfaces\" />
   </ItemGroup>

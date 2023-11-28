@@ -47,11 +47,9 @@ The console application will include the following key features:
 
 ### Sim Setup Prompts on Startup:
 
-Enter number of Floors:
-Enter number of Elevators
-
-(Optional)
-Enter timing: (millisecs/step)
+- Enter number of Floors:
+- Enter number of Elevators
+- Enter timing: (millisecs/step) - default 1000
 
 
 
