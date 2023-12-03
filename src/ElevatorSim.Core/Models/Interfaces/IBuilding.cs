@@ -11,13 +11,16 @@ public interface IBuilding
 {
     int ElevatorCount { get; }
     int FloorCount { get; }
+    int DefaultElevatorCapacity { get; }
+    int DefaultElevatorSpeed { get; }
 
     List<IElevator> Elevators { get; }
     List<IFloor> Floors { get; }
     SortedSet<int> FloorsRequestingUp { get; }
     SortedSet<int> FloorsRequestingDown { get; }
 
-    void Setup(int elevatorCount, int floorCount);
+    void Setup(int floorCount, int elevatorCount, int defaultElevatorCapacity, int defaultElevatorSpeed);
+    void Setup(int floorCount, List<IElevator> elevators);
 
     void AddElevator(IElevator elevator);
 
