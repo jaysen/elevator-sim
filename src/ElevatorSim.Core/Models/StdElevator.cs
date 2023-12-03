@@ -88,12 +88,13 @@ public class StdElevator : IElevator
 
     public void RemoveFloorStop(int floor)
     {
-        throw new NotImplementedException();
+        FloorStops.Remove(floor);
     }
     public void ClearFloorStops()
     {
-        throw new NotImplementedException();
+        FloorStops.Clear();
     }
+
 
     public async Task MoveToNextStopAsync()
     {

@@ -115,4 +115,35 @@ public class StdElevatorTests
 
     #endregion AddFloorStop_When_Idle:
 
+
+    #region RemoveFloorStop_ClearFloorStops
+    [Fact]
+    public void RemoveFloorStop_WhenCalled_ShouldRemoveFloorFromFloorStops()
+    {
+        // Arrange
+        var elevator = new StdElevator("Elevator1", 10, 0);
+        elevator.AddFloorStop(5);
+        elevator.AddFloorStop(15);
+
+        // Act
+        elevator.RemoveFloorStop(5);
+        // Assert
+        elevator.FloorStops.Should().NotContain(5);
+    }
+
+    [Fact]
+    public void ClearFloorStops_WhenCalled_ShouldClearFloorStops()
+    {
+        // Arrange
+        var elevator = new StdElevator("Elevator1", 10, 0);
+        elevator.AddFloorStop(5);
+        elevator.AddFloorStop(15);
+
+        // Act
+        elevator.ClearFloorStops();
+        // Assert
+        elevator.FloorStops.Should().BeEmpty();
+    }
+
+    #endregion RemoveFloorStop_ClearFloorStops
 }
