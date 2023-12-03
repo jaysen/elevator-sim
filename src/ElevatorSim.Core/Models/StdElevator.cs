@@ -29,21 +29,77 @@ public class StdElevator : IElevator
     public SortedSet<int> FloorStops { get; private set; }
 
 
-    public async Task MoveToNextStopAsync()
+    /// <summary>
+    /// Adds a FloorStop to the FloorStops collection.
+    /// Sets NextStop based on standard elevator logic.
+    /// - If elevator is idle, sets NextStop to closest floor.
+    /// - If elevator is moving, sets NextStop to closest floor in the direction of travel.
+    /// - If elevator is moving and there are no more stops in the direction of travel, sets NextStop to closest floor in the opposite direction.
+    /// </summary>
+    /// <param name="newFloor"></param>
+    /// <returns>true if floorstop added, false if not</returns>
+    public void AddFloorStop(int newFloor)
     {
-        throw new NotImplementedException();
-    }
+        if (FloorStops.Contains(newFloor))
+        {
+            return; // floor already in collection
+        }
 
+        FloorStops.Add(newFloor);
 
-    public void AddFloorStop(int floor)
-    {
-        throw new NotImplementedException();
+        // Change NextStop based on standard elevator logic:
+        if (NextStop is null)
+        {
+            NextStop = newFloor;
+            return;
+        }
+        
+        if (Status == ElevatorStatus.Idle)
+        {
+            // check if newFloor is closer than NextStop
+            if (Math.Abs(CurrentFloor - newFloor) < Math.Abs(CurrentFloor - NextStop.Value))
+            {
+                NextStop = newFloor;
+            }
+            return;
+        }
+
+        // if moving, determine if newFloor is closer than NextStop in the direction of travel
+        var newFloorDir = CurrentFloor < newFloor ? Direction.Up : Direction.Down;
+
+        // going up and new floor is below next stop
+        if (Direction == Direction.Up &&
+            newFloorDir == Direction.Up &&
+            newFloor < NextStop)
+        {
+            NextStop = newFloor;
+            return;
+        }
+        
+        // going down and new floor is above next stop
+        if (Direction == Direction.Down &&
+            newFloorDir == Direction.Down &&
+            newFloor > NextStop)
+        {
+            NextStop = newFloor;
+            return;
+        }
     }
 
     public void RemoveFloorStop(int floor)
     {
         throw new NotImplementedException();
     }
+    public void ClearFloorStops()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task MoveToNextStopAsync()
+    {
+        throw new NotImplementedException();
+    }
+
 
     public void LoadPassenger(IPassenger passenger)
     {
@@ -60,13 +116,13 @@ public class StdElevator : IElevator
         throw new NotImplementedException();
     }
 
-    public void ClearFloorStops()
-    {
-        throw new NotImplementedException();
-    }
+
 
     public void Reset()
     {
         throw new NotImplementedException();
     }
+
+
+
 }
