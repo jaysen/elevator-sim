@@ -13,7 +13,6 @@ public interface IElevator
     int CapacityLimit { get; }
     int TimeBetweenFloors { get; } // in milliseconds - how long it takes to move between a floor
 
-
     int CurrentFloor { get; }
     int? NextStop { get; }
     ElevatorStatus Status { get; }
