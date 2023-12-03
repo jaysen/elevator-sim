@@ -262,4 +262,77 @@ public class StdElevatorTests
     // AddFloorStop when moving - Needs more tests
 
     #endregion AddFloorStop_WhenMoving
+
+    #region CurrentPassengers
+    [Fact]
+    public void LoadPassenger_WhenCalled_ShouldAddPassengerToCurrentPassengers()
+    {
+        // Arrange
+        var elevator = new StdElevator("Elevator1", 10, 0);
+        var passenger = new Passenger(5);
+
+        // Act
+        elevator.LoadPassenger(passenger);
+
+        // Assert
+        elevator.CurrentPassengers.Should().Contain(passenger);
+    }
+
+    [Fact]
+    public void LoadPassenger_WhenCalled_ShouldAddPassengerDestinationFloorStops()
+    {
+        // Arrange
+        var elevator = new StdElevator("Elevator1", 10, 0);
+        var passenger = new Passenger(5);
+
+        // Act
+        elevator.LoadPassenger(passenger);
+
+        // Assert
+        elevator.FloorStops.Should().Contain(passenger.DestinationFloor);
+    }
+
+    [Fact]
+    public async void UnloadPassengersForThisStop_ShouldRemovePassengersWithDestinationFloorMatchingCurrentFloor()
+    {
+        // Arrange
+        var elevator = new StdElevator("Elevator1", 10, 0);
+        var passenger1 = new Passenger(5);
+        var passenger2 = new Passenger(10);
+        var passenger3 = new Passenger(15);
+        elevator.LoadPassenger(passenger1); 
+        elevator.LoadPassenger(passenger2);
+        elevator.LoadPassenger(passenger3);
+
+        // Act
+        await elevator.MoveToNextStopAsync(); // move to 5
+        elevator.UnloadPassengersForThisStop(); // unload passenger1
+
+        // Assert
+        elevator.CurrentPassengers.Should().NotContain(passenger1);
+    }
+
+    [Fact]
+    public void ClearPassengers_ShouldRemoveAllPassengers()
+    {
+        // Arrange
+        var elevator = new StdElevator("Elevator1", 10, 0);
+        var passenger1 = new Passenger(5);
+        var passenger2 = new Passenger(10);
+        var passenger3 = new Passenger(15);
+        elevator.LoadPassenger(passenger1);
+        elevator.LoadPassenger(passenger2);
+        elevator.LoadPassenger(passenger3);
+
+        // Act
+        elevator.ClearPassengers();
+
+        // Assert
+        elevator.CurrentPassengers.Should().BeEmpty();
+    }
+
+
+
+
+    #endregion CurrentPassengers
 }

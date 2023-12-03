@@ -126,17 +126,23 @@ public class StdElevator : IElevator
 
     public void LoadPassenger(IPassenger passenger)
     {
-        throw new NotImplementedException();
+        CurrentPassengers.Add(passenger);
+        AddFloorStop(passenger.DestinationFloor);
     }
 
     public void UnloadPassengersForThisStop()
     {
-        throw new NotImplementedException();
+        // TODO: Possibly refactor CurrentPassengers to be a dictionary of key=floor and value=List<Passengers>
+        var passengersToUnload = CurrentPassengers.Where(x => x.DestinationFloor == CurrentFloor).ToList();
+        foreach (var passenger in passengersToUnload)
+        {
+            CurrentPassengers.Remove(passenger);
+        }
     }
 
     public void ClearPassengers()
     {
-        throw new NotImplementedException();
+        CurrentPassengers.Clear();
     }
 
 
