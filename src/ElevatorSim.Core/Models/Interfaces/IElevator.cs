@@ -3,25 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ElevatorSim.Core.Enums;
 
 namespace ElevatorSim.Core.Models.Interfaces;
 
 public interface IElevator
 {
-    int Id { get; }
     string Name { get; }
-    
     int CapacityLimit { get; }
+    int TimeBetweenFloors { get; } // in milliseconds - how long it takes to move between a floor
 
-    int CurrentPassengers { get; }
+
     int CurrentFloor { get; }
-    Enums.ElevatorStatus Status { get; }
-    Enums.Direction Direction { get; }
-
+    int? NextStop { get; }
+    ElevatorStatus Status { get; }
+    Direction Direction { get; }
+    List<IPassenger> CurrentPassengers { get; }
     SortedSet<int> FloorStops { get; }
     
-    void MoveToNextStop();
-    void MoveToFloor(int floor);
+    Task MoveToNextStopAsync();
+
     void AddFloorStop(int floor);
     void RemoveFloorStop(int floor);
 
@@ -30,5 +31,7 @@ public interface IElevator
     
     void ClearPassengers();
     void ClearFloorStops();
+
+    void Reset();
 
 }

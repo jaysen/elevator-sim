@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ElevatorSim.Core.Models.Interfaces;
+
 public interface IBuilding
 {
     int ElevatorCount { get; }
@@ -13,18 +14,18 @@ public interface IBuilding
 
     List<IElevator> Elevators { get; }
     List<IFloor> Floors { get; }
-
-    void AddPassenger(IFloor origin, IFloor destination);
-
     SortedSet<int> FloorsRequestingUp { get; }
     SortedSet<int> FloorsRequestingDown { get; }
 
-    void AddElevatorFloorStop(IElevator elevator, int floor);
-    void RemoveElevatorFloorStop(IElevator elevator, int floor);
-    void MoveElevator(IElevator elevator, int floor);
+    void Setup(int elevatorCount, int floorCount);
 
+    void AddElevator(IElevator elevator);
 
-    void ClearElevatorFloorStops(IElevator elevator);
-    void ClearAllRequestedFloorStops();
+    void AddPassenger(int originFloor, int destinationFloor);
+
+    void DispatchElevator(int floor, Direction direction);
+
     void Reset();    
+
+
 }
