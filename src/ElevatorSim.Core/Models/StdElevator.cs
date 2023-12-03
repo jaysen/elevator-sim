@@ -95,10 +95,32 @@ public class StdElevator : IElevator
         FloorStops.Clear();
     }
 
-
     public async Task MoveToNextStopAsync()
     {
-        throw new NotImplementedException();
+        if (NextStop is null)
+        {
+            Status = ElevatorStatus.Idle;
+            return;
+        }
+
+        Status = ElevatorStatus.Moving;
+        Direction = CurrentFloor < NextStop ? Direction.Up : Direction.Down;
+
+        while (CurrentFloor != NextStop)
+        {
+            await Task.Delay(TimeBetweenFloors);
+            if (Direction == Direction.Up)
+            {
+                CurrentFloor++;
+            }
+            else
+            {
+                CurrentFloor--;
+            }
+        }
+        FloorStops.Remove(CurrentFloor);
+        NextStop = FindBestNextStop();
+        Status = ElevatorStatus.Stopped;
     }
 
 
@@ -125,5 +147,31 @@ public class StdElevator : IElevator
     }
 
 
+    // TODO: This is less than elegant. Refactor.
+    private int? FindBestNextStop()
+    {
+        var upStops = FloorStops.Where(x => x > CurrentFloor);
+        var downStops = FloorStops.Where(x => x < CurrentFloor);
 
+        if (Direction == Direction.Up)
+        {
+            if (upStops.Any())
+                return upStops.Min();
+            else if (downStops.Any())
+            {
+                return downStops.Max();
+            }
+        }
+        else if (Direction == Direction.Down)
+        {
+            if (downStops.Any())
+                return downStops.Max();
+            else if (upStops.Any())
+            {
+                return upStops.Min();
+            }
+        }
+
+        return null;
+    }
 }

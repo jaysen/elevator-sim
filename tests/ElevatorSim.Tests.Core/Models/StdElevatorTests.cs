@@ -146,4 +146,120 @@ public class StdElevatorTests
     }
 
     #endregion RemoveFloorStop_ClearFloorStops
+
+
+    #region MoveToNextStop
+    [Fact]
+    public async Task MoveToNextStop_WhenCalled_ShouldMoveElevatorToNextStop()
+    {
+        // Arrange
+        var elevator = new StdElevator("Elevator1", 10, 0, 0);
+        elevator.AddFloorStop(5);
+        elevator.AddFloorStop(15);
+
+        // Act
+        await elevator.MoveToNextStopAsync();
+        // Assert
+        elevator.CurrentFloor.Should().Be(5);
+    }
+
+    [Fact]
+    public async Task FindNextStop_WhenNone_ShouldClearNextStop()
+    {
+        // Arrange
+        var elevator = new StdElevator("Elevator1", 10, 0, 0);
+        elevator.AddFloorStop(5);
+        // Act
+        await elevator.MoveToNextStopAsync();
+        // Assert
+        elevator.NextStop.Should().BeNull();
+    }
+    [Fact]
+    public async Task FindNextStop_WhenSameDirection_ShouldUpdateNextStop()
+    {
+        // Arrange
+        var elevator = new StdElevator("Elevator1", 10, 0, 0);
+        elevator.AddFloorStop(5);
+        elevator.AddFloorStop(15);
+        elevator.AddFloorStop(35);
+
+        // Act
+        await elevator.MoveToNextStopAsync();
+        // Assert
+        elevator.NextStop.Should().Be(15);
+    }
+
+    [Fact]
+    public async Task FindNextStop_WhenOtherDirection_ShouldUpdateNextStop()
+    {
+        // Arrange
+        var elevator = new StdElevator("Elevator1", 10, 0, 5); // start floor is 5
+        elevator.AddFloorStop(10);
+        elevator.AddFloorStop(1);
+
+        // Act
+        await elevator.MoveToNextStopAsync();
+        // Assert
+        elevator.NextStop.Should().Be(10);
+    }
+
+    [Fact]
+    public async Task FindNextStop_WhenOtherDirection_ShouldUpdateNextStop2()
+    {
+        // Arrange
+        var elevator = new StdElevator("Elevator1", 10, 0, 5); // start floor is 5
+        elevator.AddFloorStop(10);
+        elevator.AddFloorStop(15);
+        elevator.AddFloorStop(4);
+
+        // Act
+        await elevator.MoveToNextStopAsync();
+        // Assert
+        elevator.NextStop.Should().Be(10);
+    }
+
+    #endregion MoveToNextStop
+
+    #region AddFloorStop_WhenMoving
+
+    [Fact]
+    // should not update next-stop when the new stop is in different direction than elevator is moving
+    public async Task AddFloorStop_WhenMoving_ShouldUpdateNextStopCorrectly()
+    {
+        // Arrange
+        var elevator = new StdElevator("Elevator1", 10, 0, 10); // start floor is 10 
+        elevator.AddFloorStop(13);
+        elevator.AddFloorStop(16);
+
+        // Act
+        await elevator.MoveToNextStopAsync(); // move to 13
+        elevator.AddFloorStop(12);
+
+        // Assert
+        // 12 is in opposite direction, so next stop should not change, even though it is closer
+        elevator.NextStop.Should().Be(16);
+    }
+
+    [Fact]
+    // should not update next-stop when the new stop is in different direction than elevator is moving
+    public async Task AddFloorStop_WhenMoving_ShouldUpdateNextStopCorrectly2()
+    {
+        // Arrange
+        var elevator = new StdElevator("Elevator1", 10, 0, 10); // start floor is 10 
+        elevator.AddFloorStop(13);
+        elevator.AddFloorStop(18);
+
+        // Act
+        await elevator.MoveToNextStopAsync(); // move to 13
+        elevator.AddFloorStop(17);
+
+        // Assert
+        // 17 is in same direction, so next stop should change to 17 from 18
+        elevator.NextStop.Should().Be(17);
+
+    }
+
+    // AddFloorStop when moving - Needs more tests
+
+    #endregion AddFloorStop_WhenMoving
 }
