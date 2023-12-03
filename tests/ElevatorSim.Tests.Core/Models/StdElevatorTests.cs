@@ -330,9 +330,31 @@ public class StdElevatorTests
         // Assert
         elevator.CurrentPassengers.Should().BeEmpty();
     }
-
-
-
-
     #endregion CurrentPassengers
+
+    #region Reset
+    [Fact]
+    public void Reset_ShouldResetElevatorToInitialState()
+    {
+        // Arrange
+        var elevator = new StdElevator("Elevator1", 10, 0);
+        var passenger1 = new Passenger(5);
+        var passenger2 = new Passenger(10);
+        var passenger3 = new Passenger(15);
+        elevator.LoadPassenger(passenger1);
+        elevator.LoadPassenger(passenger2);
+        elevator.LoadPassenger(passenger3);
+
+        // Act
+        elevator.Reset();
+
+        // Assert
+        elevator.CurrentFloor.Should().Be(0);
+        elevator.NextStop.Should().BeNull();
+        elevator.Status.Should().Be(ElevatorStatus.Idle);
+        elevator.CurrentPassengers.Should().BeEmpty();
+        elevator.FloorStops.Should().BeEmpty();
+    }
+
+    #endregion Reset
 }

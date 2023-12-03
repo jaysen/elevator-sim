@@ -145,13 +145,17 @@ public class StdElevator : IElevator
         CurrentPassengers.Clear();
     }
 
-
-
     public void Reset()
     {
-        throw new NotImplementedException();
+        CurrentFloor = 0;
+        NextStop = null;
+        Status = ElevatorStatus.Idle;
+        Direction = Direction.Idle;
+        CurrentPassengers.Clear();
+        FloorStops.Clear();
     }
 
+    #region Private Methods
 
     // TODO: This is less than elegant. Refactor.
     private int? FindBestNextStop()
@@ -180,4 +184,6 @@ public class StdElevator : IElevator
 
         return null;
     }
+
+    #endregion Private Methods
 }
