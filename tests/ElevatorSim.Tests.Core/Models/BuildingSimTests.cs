@@ -8,7 +8,7 @@ using ElevatorSim.Core.Models.Interfaces;
 
 namespace ElevatorSim.Tests.Core.Models;
 
-public class BuildingTests
+public class BuildingSimTests
 {
     [Fact]
     public void Constructor_ShouldInitializePropertiesCorrectly()
@@ -20,29 +20,29 @@ public class BuildingTests
         int defaultElevatorSpeed = 1000;
 
         // Act
-        var building = new Building(floorCount, elevatorCount, defaultCapacity, defaultElevatorSpeed);
+        var building = new BuildingSim(floorCount, elevatorCount, defaultCapacity, defaultElevatorSpeed);
 
         // Assert
         building.FloorCount.Should().Be(floorCount);
         building.ElevatorCount.Should().Be(elevatorCount);
         building.DefaultElevatorCapacity.Should().Be(defaultCapacity);
         building.DefaultElevatorSpeed.Should().Be(defaultElevatorSpeed);
-        building.Elevators.Count.Should().Be(elevatorCount);
-        building.Floors.Count.Should().Be(floorCount);
+        building.Manager.Elevators.Count.Should().Be(elevatorCount);
+        building.Manager.Floors.Count.Should().Be(floorCount);
     }
 
     [Fact]
     public void AddElevator_ShouldAddElevatorToList()
     {
         // Arrange
-        var building = new Building(10, 2, 5, 1000);
+        var building = new BuildingSim(10, 2, 5, 1000);
         var elevatorMock = new Mock<IElevator>();
 
         // Act
-        building.AddElevator(elevatorMock.Object);
+        building.AddElevatorToSim(elevatorMock.Object);
 
         // Assert
-        building.Elevators.Should().Contain(elevatorMock.Object);
+        building.Manager.Elevators.Should().Contain(elevatorMock.Object);
         building.ElevatorCount.Should().Be(3);
     }
 
@@ -55,15 +55,21 @@ public class BuildingTests
             new Mock<IElevator>().Object,
             new Mock<IElevator>().Object
         };
+        int defaultCapacity = 5;
+        int defaultSpeed = 1000;
         int floorCount = 10;
 
         // Act
-        var building = new Building(floorCount, customElevators.ToList());
+        var sim = new BuildingSim(floorCount, 0, defaultCapacity, defaultSpeed);
+        foreach (var elevator in customElevators)
+        {
+            sim.AddElevatorToSim(elevator);
+        }
 
         // Assert
-        building.ElevatorCount.Should().Be(customElevators.Length);
-        building.FloorCount.Should().Be(floorCount);
-        building.Elevators.Should().BeEquivalentTo(customElevators);
+        sim.ElevatorCount.Should().Be(customElevators.Length);
+        sim.FloorCount.Should().Be(floorCount);
+        sim.Manager.Elevators.Should().BeEquivalentTo(customElevators);
     }
 
     // Placeholder for AddPassenger test
