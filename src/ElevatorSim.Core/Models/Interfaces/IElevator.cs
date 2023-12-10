@@ -12,7 +12,6 @@ public interface IElevator
     string Name { get; }
     int CapacityLimit { get; }
     int TimeBetweenFloors { get; } // in milliseconds - how long it takes to move between a floor
-
     int CurrentFloor { get; }
     int? NextStop { get; }
     ElevatorStatus Status { get; }
@@ -21,7 +20,7 @@ public interface IElevator
     SortedSet<int> FloorStops { get; }
     
     Task MoveToNextStopAsync();
-    Task MoveToFloorAsync(int floorNum);
+    Task MoveToFloorAsync(int floorNum, ElevatorStatus endStatus = ElevatorStatus.Idle);
     bool IsMovingTowardFloor(int floorNum);
 
     void AddFloorStop(int floor);
