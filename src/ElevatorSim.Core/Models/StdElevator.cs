@@ -100,15 +100,33 @@ public class StdElevator : IElevator
         if (NextStop is null)
         {
             Status = ElevatorStatus.Idle;
+            Direction = Direction.Idle;
             return;
         }
 
-        await MoveToFloorAsync(NextStop.Value);
+        await MoveToFloorAsync(NextStop.Value, ElevatorStatus.Stopped);
 
         NextStop = FindBestNextStop();
+
+        if (NextStop is null)
+        {
+            Status = ElevatorStatus.Idle;
+            Direction = Direction.Idle;
+        }
+        else
+        if (NextStop > CurrentFloor)
+        {
+            Direction = Direction.Up;
+            Status = ElevatorStatus.Stopped;
+        }
+        else
+        {
+            Direction = Direction.Down;
+            Status = ElevatorStatus.Stopped;
+        }
     }
 
-    public async Task MoveToFloorAsync(int floor)
+    public async Task MoveToFloorAsync(int floor, ElevatorStatus endStatus = ElevatorStatus.Idle)
     {
         Status = ElevatorStatus.Moving;
         Direction = CurrentFloor < floor ? Direction.Up : Direction.Down;
@@ -125,7 +143,11 @@ public class StdElevator : IElevator
                 CurrentFloor--;
             }
         }
-        Status = ElevatorStatus.Stopped;
+        Status = endStatus;
+        if (Status == ElevatorStatus.Idle)
+        {
+            Direction = Direction.Idle;
+        }
     }
 
     public void LoadPassenger(IPassenger passenger)
