@@ -33,7 +33,7 @@ namespace ElevatorSim.Core.Models
             DownQueue.Clear();
         }
 
-        public void AddPassenger(IPassenger passenger)
+        public bool AddPassenger(IPassenger passenger)
         {
             if (passenger.DestinationFloor > FloorNumber)
             {
@@ -43,6 +43,11 @@ namespace ElevatorSim.Core.Models
             {
                 DownQueue.Enqueue(passenger);
             }
+            else
+            {
+                return false;
+            }
+            return true;
         }
 
         public void AddElevatorToStoppedElevators(IElevator elevator)

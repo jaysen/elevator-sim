@@ -67,4 +67,44 @@ public class ElevatorManagerTests
         _elevatorManager.Floors.Should().HaveCount(0);
     }
 
+
+    [Fact]
+    public async Task MoveElevatorToFloorAsync_Should_MoveElevatorToFloor()
+    {
+        // Arrange
+        int floorCount = 10;
+        int elevatorCount = 2;
+        int defaultElevatorCapacity = 10;
+        int defaultElevatorSpeed = 0;
+        _elevatorManager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
+        var elevator = _elevatorManager.Elevators[0];
+
+        // Act
+        await _elevatorManager.MoveElevatorToFloorAsync(elevator, 5);
+
+        // Assert
+        elevator.CurrentFloor.Should().Be(5);
+    }
+
+    [Fact]
+    public void AddPassengerToFloor_Should_AddPassengerToFloor_AndReturnTrue()
+    {
+        // Arrange
+        int floorCount = 10;
+        int elevatorCount = 2;
+        int defaultElevatorCapacity = 10;
+        int defaultElevatorSpeed = 0;
+        _elevatorManager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
+        var floor = _elevatorManager.Floors[0];
+
+        // Act
+        bool result = _elevatorManager.AddPassengerToFloor(0, 5);
+
+        // Assert
+        result.Should().BeTrue();
+        floor.UpQueue.Should().HaveCount(1);
+        floor.UpQueue.First().DestinationFloor.Should().Be(5);
+    }
+
+
 }

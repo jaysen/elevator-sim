@@ -43,25 +43,31 @@ public class ElevatorManager : IElevatorManager
         return true;
     }
 
-    public Task<IElevator> DispatchElevatorToFloorAsync(int floor, Direction direction)
+    public async Task DispatchElevatorToFloorAsync(int floorNum, Direction direction)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IAsyncResult> MoveElevatorToFloorAsync(IElevator elevator, int floorNum)
+
+    public async Task<bool> MoveElevatorToFloorAsync(IElevator elevator, int floorNum)
+    {
+        await elevator.MoveToFloorAsync(floorNum);
+        return elevator.CurrentFloor == floorNum;
+    }
+
+    public bool AddPassengerToFloor(int floorNum, int destinationFloor)
+    {
+        var floor = Floors[floorNum];
+        var passenger = new Passenger(destinationFloor);
+        return floor.AddPassenger(passenger); 
+    }
+
+    public Task<bool> ProcessFloorStop(IElevator elevator, int floorNum)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IAsyncResult> ProcessFloorStop(IElevator elevator, int floorNum)
-    {
-        throw new NotImplementedException();
-    }
 
-    public bool AddPassengerToFloor(int floor, int destinationFloor)
-    {
-        throw new NotImplementedException();
-    }
 
     public bool Reset()
     {
@@ -70,7 +76,8 @@ public class ElevatorManager : IElevatorManager
         FloorsRequestingDown.Clear();
         FloorsRequestingUp.Clear();
         return true;
-
-        
     }
+
+
+
 }
