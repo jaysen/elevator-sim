@@ -57,7 +57,7 @@ public class ElevatorManager : IElevatorManager
     public IElevator? GetBestElevatorToDispatch(int floorNum, Direction direction)
     {
         // if elevators are idle or stopped on floorNum, return first one
-        var stoppedElevatorOnFloor = Elevators.FirstOrDefault(e => e.CurrentFloor == floorNum 
+        var stoppedElevatorOnFloor = Elevators.FirstOrDefault(e => e.CurrentFloor == floorNum
             && e.Status != ElevatorStatus.Moving);
         if (stoppedElevatorOnFloor != null)
         {
@@ -66,7 +66,7 @@ public class ElevatorManager : IElevatorManager
 
         // get the closest of all not moving in wrong direction:
         var elevatorsNotMovingInWrongDirection = Elevators
-            .Where(e => e.Direction != direction);
+            .Where(e => e.Direction == direction || e.Direction == Direction.Idle);
         if (elevatorsNotMovingInWrongDirection.Any())
         {
             // If there's only one elevator, or more than one, this approach works for both.

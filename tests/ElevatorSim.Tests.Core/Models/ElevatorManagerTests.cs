@@ -134,9 +134,9 @@ public class ElevatorManagerTests
         // Arrange
         _manager.Reset();
         int floorCount = 30;
-        int elevatorCount = 2;
+        int elevatorCount = 3;
         int defaultElevatorCapacity = 10;
-        int defaultElevatorSpeed = 100;
+        int defaultElevatorSpeed = 10;
         _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
         var elevator1 = _manager.Elevators[0];
         var elevator2 = _manager.Elevators[1];
@@ -153,6 +153,7 @@ public class ElevatorManagerTests
         await Task.WhenAll(task1, task2);
 
         // Assert
+        testElevator.Should().NotBeNull();
         testElevator.Name.Should().Be(elevator1.Name);
     }
 
@@ -163,7 +164,7 @@ public class ElevatorManagerTests
         int floorCount = 30;
         int elevatorCount = 3;
         int defaultElevatorCapacity = 10;
-        int defaultElevatorSpeed = 100;
+        int defaultElevatorSpeed = 10;
         _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
         var elevator1 = _manager.Elevators[0];
         var elevator2 = _manager.Elevators[1];
