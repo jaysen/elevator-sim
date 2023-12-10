@@ -21,6 +21,8 @@ public interface IElevator
     SortedSet<int> FloorStops { get; }
     
     Task MoveToNextStopAsync();
+    Task MoveToFloorAsync(int floorNum);
+    bool IsMovingTowardFloor(int floorNum);
 
     void AddFloorStop(int floor);
     void RemoveFloorStop(int floor);

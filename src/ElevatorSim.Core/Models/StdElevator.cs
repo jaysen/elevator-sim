@@ -103,10 +103,17 @@ public class StdElevator : IElevator
             return;
         }
 
-        Status = ElevatorStatus.Moving;
-        Direction = CurrentFloor < NextStop ? Direction.Up : Direction.Down;
+        await MoveToFloorAsync(NextStop.Value);
 
-        while (CurrentFloor != NextStop)
+        NextStop = FindBestNextStop();
+    }
+
+    public async Task MoveToFloorAsync(int floor)
+    {
+        Status = ElevatorStatus.Moving;
+        Direction = CurrentFloor < floor ? Direction.Up : Direction.Down;
+
+        while (CurrentFloor != floor)
         {
             await Task.Delay(TimeBetweenFloors);
             if (Direction == Direction.Up)
@@ -118,11 +125,8 @@ public class StdElevator : IElevator
                 CurrentFloor--;
             }
         }
-        FloorStops.Remove(CurrentFloor);
-        NextStop = FindBestNextStop();
         Status = ElevatorStatus.Stopped;
     }
-
 
     public void LoadPassenger(IPassenger passenger)
     {
@@ -153,6 +157,17 @@ public class StdElevator : IElevator
         Direction = Direction.Idle;
         CurrentPassengers.Clear();
         FloorStops.Clear();
+    }
+
+    public bool IsMovingTowardFloor(int floor)
+    {
+        if (Direction == Direction.Up && floor > CurrentFloor)
+            return true;
+
+        if (Direction == Direction.Down && floor < CurrentFloor)
+            return true;
+
+        return false;
     }
 
     #region Private Methods
