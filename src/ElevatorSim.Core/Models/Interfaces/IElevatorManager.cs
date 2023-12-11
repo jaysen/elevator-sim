@@ -33,13 +33,13 @@ public interface IElevatorManager
 
     bool AddElevator(IElevator elevator);
 
-    bool AddPassengerToFloor(int floor, int destinationFloor);
+    bool AddPassengerToFloor(int floorNum, int destinationFloor);
 
-    Task<IElevator> DispatchElevatorToFloorAsync(int floor, Direction direction);
+    Task DispatchElevatorToFloorAsync(int floor, Direction direction);
 
-    Task<IAsyncResult> MoveElevatorToFloorAsync(IElevator elevator, int floorNum);
+    Task<bool> MoveElevatorToFloorAsync(IElevator elevator, int floorNum);
 
-    Task<IAsyncResult> ProcessFloorStop(IElevator elevator, int floorNum);
+    Task<bool> ProcessFloorStop(IElevator elevator, int floorNum);
 
     bool Reset();
 

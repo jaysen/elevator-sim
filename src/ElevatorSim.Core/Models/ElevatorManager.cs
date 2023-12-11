@@ -43,25 +43,80 @@ public class ElevatorManager : IElevatorManager
         return true;
     }
 
-    public Task<IElevator> DispatchElevatorToFloorAsync(int floor, Direction direction)
+    public async Task DispatchElevatorToFloorAsync(int floorNum, Direction direction)
+    {
+        var bestElevator = GetBestElevatorToDispatch(floorNum, direction);
+        if (bestElevator is null)
+        {
+            return;
+        }
+        bestElevator.AddFloorStop(floorNum);
+        await bestElevator.MoveToNextStopAsync();
+    }
+
+    public IElevator? GetBestElevatorToDispatch(int floorNum, Direction direction)
+    {
+        // if elevators are idle or stopped on floorNum, return first one
+        var stoppedElevatorOnFloor = Elevators.FirstOrDefault(e => e.CurrentFloor == floorNum
+            && e.Status != ElevatorStatus.Moving);
+        if (stoppedElevatorOnFloor != null)
+        {
+            return stoppedElevatorOnFloor;
+        }
+
+        // get the closest of all not moving in wrong direction:
+        var elevatorsNotMovingInWrongDirection = Elevators
+            .Where(e => e.Direction == direction || e.Direction == Direction.Idle);
+        if (elevatorsNotMovingInWrongDirection.Any())
+        {
+            // If there's only one elevator, or more than one, this approach works for both.
+            return elevatorsNotMovingInWrongDirection
+                .OrderBy(e => Math.Abs(e.CurrentFloor - floorNum))
+                .First();
+        }
+
+        // if all moving in the opposite direction,
+        // return the elevator that can turn around first
+        var elevatorsMovingAway = Elevators.Where(e => e.Direction != direction).ToList();
+        if (elevatorsMovingAway.Any())
+        {
+            //return the one that can turn around first
+            if (direction == Direction.Up)  
+            {
+                // request up, elevator moving down
+                // so choose the elevator with the highest minimum floor stop 
+                return elevatorsMovingAway.OrderByDescending(e => e.FloorStops.Min).First();
+            }
+            else
+            {
+                // request down, elevator moving up
+                // so choose the elevator with the lowest maximum floor stop
+                return elevatorsMovingAway.OrderByDescending(e => e.FloorStops.Max).First();
+            }
+        }
+
+        return null;
+    }
+
+    public async Task<bool> MoveElevatorToFloorAsync(IElevator elevator, int floorNum)
+    {
+        await elevator.MoveToFloorAsync(floorNum);
+        return elevator.CurrentFloor == floorNum;
+    }
+
+    public bool AddPassengerToFloor(int floorNum, int destinationFloor)
+    {
+        var floor = Floors[floorNum];
+        var passenger = new Passenger(destinationFloor);
+        return floor.AddPassenger(passenger); 
+    }
+
+    public Task<bool> ProcessFloorStop(IElevator elevator, int floorNum)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IAsyncResult> MoveElevatorToFloorAsync(IElevator elevator, int floorNum)
-    {
-        throw new NotImplementedException();
-    }
 
-    public Task<IAsyncResult> ProcessFloorStop(IElevator elevator, int floorNum)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool AddPassengerToFloor(int floor, int destinationFloor)
-    {
-        throw new NotImplementedException();
-    }
 
     public bool Reset()
     {
@@ -70,7 +125,8 @@ public class ElevatorManager : IElevatorManager
         FloorsRequestingDown.Clear();
         FloorsRequestingUp.Clear();
         return true;
-
-        
     }
+
+
+
 }

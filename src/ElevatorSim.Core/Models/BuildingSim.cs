@@ -29,9 +29,17 @@ public class BuildingSim : IBuildingSim
         ElevatorCount++;
     }
 
-    public void AddPassengerToSim(int originFloor, int destinationFloor)
+    public bool AddPassengerToSim(int originFloor, int destinationFloor)
     {
-        Manager.AddPassengerToFloor(originFloor, destinationFloor);
+        if (originFloor < 0 || originFloor >= FloorCount)
+        {
+            throw new ArgumentException($"Origin floor must be between 0 and {FloorCount - 1}");
+        }
+        if (destinationFloor < 0 || destinationFloor >= FloorCount)
+        {
+            throw new ArgumentException($"Destination floor must be between 0 and {FloorCount - 1}");
+        }
+        return Manager.AddPassengerToFloor(originFloor, destinationFloor);
     }
 
     public void ResetSim()

@@ -15,7 +15,7 @@ public interface IBuildingSim
     int DefaultElevatorSpeed { get; }
 
     void AddElevatorToSim(IElevator elevator);   
-    void AddPassengerToSim(int originFloor, int destinationFloor);
+    bool AddPassengerToSim(int originFloor, int destinationFloor);
     void ResetSim();
 
     IElevatorManager Manager { get; }

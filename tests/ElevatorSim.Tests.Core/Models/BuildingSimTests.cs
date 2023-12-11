@@ -72,24 +72,87 @@ public class BuildingSimTests
         sim.Manager.Elevators.Should().BeEquivalentTo(customElevators);
     }
 
-    // Placeholder for AddPassenger test
-    // [Fact]
-    // public void AddPassenger_ShouldAddPassengerToFloor()
-    // {
-    //     // Test implementation here
-    // }
+    #region AddPassenger tests
 
-    // Placeholder for DispatchElevator test
-    // [Fact]
-    // public void DispatchElevator_ShouldSendElevatorToFloor()
-    // {
-    //     // Test implementation here
-    // }
+    [Fact]
+    public void AddPassenger_ShouldAddPassengerToFloor_And_ReturnTrue()
+    {
+        // Arrange
+        var building = new BuildingSim(10, 2, 5, 1000);
+        int originFloor = 5;
+        int destinationFloor = 3;
 
-    // Placeholder for Reset test
-    // [Fact]
-    // public void Reset_ShouldResetBuildingState()
-    // {
-    //     // Test implementation here
-    // }
+        // Act
+        var retval = building.AddPassengerToSim(originFloor, destinationFloor);
+
+        // Assert
+        retval.Should().BeTrue();
+        building.Manager.Floors[originFloor].DownQueue
+            .Should().ContainSingle().Which
+            .Should().BeOfType<Passenger>()
+            .Which.DestinationFloor.Should().Be(destinationFloor);
+    }
+    [Fact]
+    public void AddPassenger_ToDestinationFloor_ShouldNotAddPassengerToFloor()
+    {
+        // Arrange
+        var building = new BuildingSim(10, 2, 5, 1000);
+        int originFloor = 5;
+        int destinationFloor = 5;
+
+        // Act
+        building.AddPassengerToSim(originFloor, destinationFloor);
+
+        // Assert
+        building.Manager.Floors[originFloor].DownQueue
+            .Should().BeEmpty();
+        building.Manager.Floors[originFloor].UpQueue
+            .Should().BeEmpty();
+    }
+
+    [Fact]
+    public void AddPassenger_WithDestinationAboveTop_ShouldThrowException()
+    {
+        // Arrange
+        var floorCount = 2;
+        var building = new BuildingSim(floorCount, 1, 5, 1000);
+        int originFloor = 1;
+        int destinationFloor = 3;
+
+        // add passenger should throw exception
+        building.Invoking(b => b.AddPassengerToSim(originFloor, destinationFloor))
+            .Should().Throw<ArgumentException>()
+            .WithMessage($"Destination floor must be between 0 and {floorCount - 1}");
+    }
+    [Fact]
+    public void AddPassenger_WithOriginAboveTop_ShouldThrowException()
+    {
+        // Arrange
+        var floorCount = 2;
+        var building = new BuildingSim(floorCount, 1, 5, 1000);
+        int originFloor = 3;
+        int destinationFloor = 2;
+
+        // add passenger should throw exception
+        building.Invoking(b => b.AddPassengerToSim(originFloor, destinationFloor))
+            .Should().Throw<ArgumentException>()
+            .WithMessage($"Origin floor must be between 0 and {floorCount - 1}");
+    }
+    [Fact]
+    public void AddPassenger_WithNegativeOrigin_ShouldThrowException()
+    {
+        // Arrange
+        var floorCount = 2;
+        var building = new BuildingSim(floorCount, 1, 5, 1000);
+        int originFloor = -1;
+        int destinationFloor = 2;
+
+        // add passenger should throw exception
+        building.Invoking(b => b.AddPassengerToSim(originFloor, destinationFloor))
+            .Should().Throw<ArgumentException>()
+            .WithMessage($"Origin floor must be between 0 and {floorCount - 1}");
+    }
+
+    #endregion AddPassenger tests
+
 }

@@ -17,7 +17,7 @@ public interface IFloor
     void ClearUpQueue();
     void ClearDownQueue();
 
-    void AddPassenger(IPassenger passenger);
+    bool AddPassenger(IPassenger passenger);
     void AddElevatorToStoppedElevators(IElevator elevator);
     void RemoveElevatorFromStoppedElevators(IElevator elevator);
     

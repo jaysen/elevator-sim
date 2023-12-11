@@ -100,13 +100,38 @@ public class StdElevator : IElevator
         if (NextStop is null)
         {
             Status = ElevatorStatus.Idle;
+            Direction = Direction.Idle;
             return;
         }
 
-        Status = ElevatorStatus.Moving;
-        Direction = CurrentFloor < NextStop ? Direction.Up : Direction.Down;
+        await MoveToFloorAsync(NextStop.Value, ElevatorStatus.Stopped);
 
-        while (CurrentFloor != NextStop)
+        NextStop = FindBestNextStop();
+
+        if (NextStop is null)
+        {
+            Status = ElevatorStatus.Idle;
+            Direction = Direction.Idle;
+        }
+        else
+        if (NextStop > CurrentFloor)
+        {
+            Direction = Direction.Up;
+            Status = ElevatorStatus.Stopped;
+        }
+        else
+        {
+            Direction = Direction.Down;
+            Status = ElevatorStatus.Stopped;
+        }
+    }
+
+    public async Task MoveToFloorAsync(int floor, ElevatorStatus endStatus = ElevatorStatus.Idle)
+    {
+        Status = ElevatorStatus.Moving;
+        Direction = CurrentFloor < floor ? Direction.Up : Direction.Down;
+
+        while (CurrentFloor != floor)
         {
             await Task.Delay(TimeBetweenFloors);
             if (Direction == Direction.Up)
@@ -118,11 +143,12 @@ public class StdElevator : IElevator
                 CurrentFloor--;
             }
         }
-        FloorStops.Remove(CurrentFloor);
-        NextStop = FindBestNextStop();
-        Status = ElevatorStatus.Stopped;
+        Status = endStatus;
+        if (Status == ElevatorStatus.Idle)
+        {
+            Direction = Direction.Idle;
+        }
     }
-
 
     public void LoadPassenger(IPassenger passenger)
     {
@@ -153,6 +179,17 @@ public class StdElevator : IElevator
         Direction = Direction.Idle;
         CurrentPassengers.Clear();
         FloorStops.Clear();
+    }
+
+    public bool IsMovingTowardFloor(int floor)
+    {
+        if (Direction == Direction.Up && floor > CurrentFloor)
+            return true;
+
+        if (Direction == Direction.Down && floor < CurrentFloor)
+            return true;
+
+        return false;
     }
 
     #region Private Methods
