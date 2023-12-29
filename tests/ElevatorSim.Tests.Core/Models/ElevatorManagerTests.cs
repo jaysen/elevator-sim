@@ -109,7 +109,7 @@ public class ElevatorManagerTests
     #region Elevator Dispatch
 
     [Fact]
-    public async Task DispatchElevatorToFloorAsync_Should_DispatchElevatorToFloor()
+    public void DispatchElevatorToFloorAsync_Should_DispatchElevatorToFloor()
     {
         // Arrange
         int floorCount = 10;
@@ -120,7 +120,7 @@ public class ElevatorManagerTests
         var elevator = _manager.Elevators[0];
 
         // Act
-        await _manager.DispatchElevatorToFloorAsync(0, Direction.Up);
+        _manager.DispatchElevatorToFloorAsync(0, Direction.Up);
 
         // Assert
         elevator.CurrentFloor.Should().Be(0);
@@ -248,7 +248,6 @@ public class ElevatorManagerTests
         await Task.WhenAll(task1, task2);
     }
 
-
     [Fact]
     public async Task GetBestElevatorToDispatch_WhenSomeMovingToward_Should_ReturnFastest()
     {
@@ -338,7 +337,7 @@ public class ElevatorManagerTests
         int floorCount = 30;
         int elevatorCount = 2;
         int defaultElevatorCapacity = 10;
-        int defaultElevatorSpeed = 80;
+        int defaultElevatorSpeed = 1;
         _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
 
         var elevator1 = _manager.Elevators[0];
@@ -365,9 +364,114 @@ public class ElevatorManagerTests
         await Task.WhenAll(task1, task2); // Ensure both elevators have moved
     }
 
-
-
     #endregion GetBestElevatorToDispatch
+
+    #region ProcessFloorStop
+
+    [Fact]
+    public async Task ProcessFloorStop_WithIdleElevatorAndMoreUpPassengers_ShouldLoadAndGoUp()
+    {
+        // Arrange
+        int floorCount = 30;
+        int elevatorCount = 2;
+        int defaultElevatorCapacity = 10;
+        int defaultElevatorSpeed = 0;
+        _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
+        var floorNum = 5;
+        var elevator = _manager.Elevators[0];
+        elevator.AddFloorStop(floorNum);
+        await elevator.MoveToNextStopAsync();
+        
+        _manager.AddPassengerToFloor(floorNum, 6);
+        _manager.AddPassengerToFloor(floorNum, 8);
+        _manager.AddPassengerToFloor(floorNum, 8);
+        _manager.AddPassengerToFloor(floorNum, 2);
+        _manager.AddPassengerToFloor(floorNum, 1);
+
+        // Act
+        var result = await _manager.ProcessFloorStop(elevator, floorNum);
+
+        // Assert
+        result.Should().BeTrue();
+        elevator.Direction.Should().Be(Direction.Up);
+        elevator.CurrentPassengers.Should().NotBeEmpty();
+        _manager.Floors[floorNum].UpQueue.Should().BeEmpty(); // Assuming the elevator can carry all passengers.
+        elevator.FloorStops.Contains(6).Should().BeTrue();
+        elevator.FloorStops.Contains(8).Should().BeTrue();
+        elevator.CurrentPassengers.Count.Should().Be(3);
+        elevator.CurrentPassengers.Should().Contain(p => p.DestinationFloor == 6);
+        elevator.CurrentPassengers.Should().Contain(p => p.DestinationFloor == 8);
+    }
+
+    [Fact]
+    public async Task ProcessFloorStop_WithIdleElevatorAndMoreDownPassengers_ShouldLoadAndGoDown()
+    {
+        // Arrange
+        int floorCount = 30;
+        int elevatorCount = 2;
+        int defaultElevatorCapacity = 10;
+        int defaultElevatorSpeed = 0;
+        _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
+        var floorNum = 5;
+        var elevator = _manager.Elevators[0];
+        elevator.AddFloorStop(floorNum);
+        await elevator.MoveToNextStopAsync();
+
+        _manager.AddPassengerToFloor(floorNum, 4);
+        _manager.AddPassengerToFloor(floorNum, 2);
+        _manager.AddPassengerToFloor(floorNum, 1);
+        _manager.AddPassengerToFloor(floorNum, 8);
+        _manager.AddPassengerToFloor(floorNum, 9);
+
+        // Act
+        var result = await _manager.ProcessFloorStop(elevator, floorNum);
+
+        // Assert
+        result.Should().BeTrue();
+        elevator.Direction.Should().Be(Direction.Down);
+        elevator.CurrentPassengers.Should().NotBeEmpty();
+        _manager.Floors[floorNum].DownQueue.Should().BeEmpty(); // Assuming the elevator can carry all passengers.
+        elevator.CurrentPassengers.Count.Should().Be(3);
+        elevator.CurrentPassengers.Should().Contain(p => p.DestinationFloor == 4);
+        elevator.CurrentPassengers.Should().Contain(p => p.DestinationFloor == 2);
+        elevator.CurrentPassengers.Should().Contain(p => p.DestinationFloor == 1);
+    }
+
+    [Fact]
+    public async Task ProcessFloorStop_WithElevatorGoingUpAndMoreDownPassengers_ShouldLoadAndGoUp()
+    {
+        // Arrange
+        int floorCount = 30;
+        int elevatorCount = 2;
+        int defaultElevatorCapacity = 10;
+        int defaultElevatorSpeed = 10;
+        _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
+        var elevator = _manager.Elevators[0];
+        var floorNum = 5;
+        elevator.AddFloorStop(floorNum);
+        elevator.AddFloorStop(29);
+        elevator.AddFloorStop(30);
+        await elevator.MoveToNextStopAsync();
+
+        _manager.AddPassengerToFloor(floorNum, 16);
+        _manager.AddPassengerToFloor(floorNum, 18);
+        _manager.AddPassengerToFloor(floorNum, 3);
+        _manager.AddPassengerToFloor(floorNum, 2);
+        _manager.AddPassengerToFloor(floorNum, 1);
+
+        // Act
+        var result = await _manager.ProcessFloorStop(elevator, floorNum);
+
+        // Assert
+        elevator.Direction.Should().Be(Direction.Up);
+        elevator.FloorStops.Contains(16).Should().BeTrue();
+        elevator.FloorStops.Contains(18).Should().BeTrue();
+        elevator.CurrentPassengers.Count.Should().Be(2);
+        elevator.CurrentPassengers.Should().Contain(p => p.DestinationFloor == 16);
+        elevator.CurrentPassengers.Should().Contain(p => p.DestinationFloor == 18);
+    }
+
+    #endregion ProcessFloorStop
 
 
 }
