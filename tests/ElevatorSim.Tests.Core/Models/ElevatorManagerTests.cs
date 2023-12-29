@@ -198,7 +198,7 @@ public class ElevatorManagerTests
         int floorCount = 30;
         int elevatorCount = 3;
         int defaultElevatorCapacity = 10;
-        int defaultElevatorSpeed = 100;
+        int defaultElevatorSpeed = 10;
         _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
         var elevator0 = _manager.Elevators[0];
         var elevator1 = _manager.Elevators[1];
@@ -227,7 +227,7 @@ public class ElevatorManagerTests
         int floorCount = 30;
         int elevatorCount = 3;
         int defaultElevatorCapacity = 10;
-        int defaultElevatorSpeed = 100;
+        int defaultElevatorSpeed = 10;
         _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
         var elevatorCloseButMovingAway = _manager.Elevators[0];
         var elevatorFarButMovingToward = _manager.Elevators[1];
@@ -280,7 +280,7 @@ public class ElevatorManagerTests
         int floorCount = 30;
         int elevatorCount = 2;
         int defaultElevatorCapacity = 10;
-        int defaultElevatorSpeed = 100;
+        int defaultElevatorSpeed = 10;
         _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
         var elevator1 = _manager.Elevators[0];
         var elevator2 = _manager.Elevators[1];
@@ -290,7 +290,7 @@ public class ElevatorManagerTests
         elevator1.AddFloorStop(6);
         elevator1.AddFloorStop(9);
         elevator2.AddFloorStop(10);
-        elevator2.AddFloorStop(12);
+        elevator2.AddFloorStop(30);
         var task1 = elevator1.MoveToNextStopAsync();
         var task2 = elevator2.MoveToNextStopAsync();
         var testElevator = _manager.GetBestElevatorToDispatch(1, Direction.Up);
@@ -307,21 +307,24 @@ public class ElevatorManagerTests
         int floorCount = 30;
         int elevatorCount = 2;
         int defaultElevatorCapacity = 10;
-        int defaultElevatorSpeed = 100;
+        int defaultElevatorSpeed = 10;
         _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
         var elevator1 = _manager.Elevators[0];
         var elevator2 = _manager.Elevators[1];
         //await Task.WhenAll(elevator0.MoveToFloorAsync(2), elevator1.MoveToFloorAsync(2));
 
         // Act
-        elevator1.AddFloorStop(6);
-        elevator1.AddFloorStop(14);
         elevator1.AddFloorStop(3);
         elevator2.AddFloorStop(10);
+        await elevator1.MoveToNextStopAsync();
+        await elevator2.MoveToNextStopAsync();
+
+        elevator1.AddFloorStop(14);
+        elevator1.AddFloorStop(6);
         elevator2.AddFloorStop(12);
         var task1 = elevator1.MoveToNextStopAsync();
         var task2 = elevator2.MoveToNextStopAsync();
-        var testElevator = _manager.GetBestElevatorToDispatch(1, Direction.Up);
+        var testElevator = _manager.GetBestElevatorToDispatch(2, Direction.Up);
 
         // Assert
         testElevator.Should().Be(elevator2);
