@@ -331,6 +331,40 @@ public class ElevatorManagerTests
         await Task.WhenAll(task1, task2);
     }
 
+    [Fact]
+    public async Task GetBestElevatorToDispatch_WhenNeedingTurnaroundPastRequestedFloor_ShouldChooseCorrectly()
+    {
+        // Arrange
+        int floorCount = 30;
+        int elevatorCount = 2;
+        int defaultElevatorCapacity = 10;
+        int defaultElevatorSpeed = 80;
+        _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
+
+        var elevator1 = _manager.Elevators[0];
+        var elevator2 = _manager.Elevators[1];
+
+
+        elevator1.AddFloorStop(9); 
+        elevator2.AddFloorStop(10); 
+        await elevator1.MoveToNextStopAsync(); // move this elevator to 5
+        await elevator2.MoveToNextStopAsync(); // move this elevator to 10
+
+        elevator1.AddFloorStop(15);
+        elevator1.AddFloorStop(2);  // elevator 1 will turn around at 11 and need to go past requested floor
+        elevator2.AddFloorStop(18);
+        elevator2.AddFloorStop(25); // elevator 2 will turn around at 12 and not need to go past requested floor
+
+        // Act
+        var task1 = elevator1.MoveToNextStopAsync();
+        var task2 = elevator2.MoveToNextStopAsync();
+        var testElevator = _manager.GetBestElevatorToDispatch(4, Direction.Up);
+
+        // Assert
+        testElevator.Should().Be(elevator2); // Elevator 1 should be chosen as it won't pass the requested floor going the other way after turning around
+        await Task.WhenAll(task1, task2); // Ensure both elevators have moved
+    }
+
 
 
     #endregion GetBestElevatorToDispatch

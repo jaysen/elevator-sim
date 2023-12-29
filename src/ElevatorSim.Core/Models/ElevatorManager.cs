@@ -84,6 +84,9 @@ public class ElevatorManager : IElevatorManager
         // if the elevator is going up, then the distance before turning around is the distance from the current floor to the highest floor stop
         // if the elevator is going down, then the distance before turning around is the distance from the current floor to the lowest floor stop
         // the total distance is the distance before turning around + the distance between the turn around stop and the requested floor
+
+        //TODO: This case doesn't yet handle the case where the elevator is already needing to turn around and go past the requested floor counter to requested direction.
+
         var elevatorsTurningAround = Elevators
             .Select(e => new
             {
@@ -94,7 +97,7 @@ public class ElevatorManager : IElevatorManager
             })
             .OrderBy(e => e.Distance)
             .ToList();
-        
+
         return elevatorsTurningAround.FirstOrDefault()?.Elevator;
 
     }
