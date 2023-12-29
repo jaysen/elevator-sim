@@ -43,7 +43,7 @@ public class ElevatorManager : IElevatorManager
         return true;
     }
 
-    public async Task DispatchElevatorToFloorAsync(int floorNum, Direction direction)
+    public void DispatchElevatorToFloorAsync(int floorNum, Direction direction)
     {
         var bestElevator = GetBestElevatorToDispatch(floorNum, direction);
         if (bestElevator is null)
@@ -51,7 +51,7 @@ public class ElevatorManager : IElevatorManager
             return;
         }
         bestElevator.AddFloorStop(floorNum);
-        await bestElevator.MoveToNextStopAsync();
+        //await bestElevator.MoveToNextStopAsync();
     }
 
     public IElevator? GetBestElevatorToDispatch(int floorNum, Direction direction)
@@ -112,14 +112,68 @@ public class ElevatorManager : IElevatorManager
     {
         var floor = Floors[floorNum];
         var passenger = new Passenger(destinationFloor);
+        var direction = floorNum < destinationFloor ? Direction.Up : Direction.Down;
+        if (direction == Direction.Up)
+        {
+            DispatchElevatorToFloorAsync(floorNum, Direction.Up);
+            FloorsRequestingUp.Add(floorNum);
+        }
+        else if (destinationFloor < floorNum)
+        {
+            DispatchElevatorToFloorAsync(floorNum, Direction.Down);
+            FloorsRequestingDown.Add(floorNum);
+        }
         return floor.AddPassenger(passenger); 
     }
 
     public Task<bool> ProcessFloorStop(IElevator elevator, int floorNum)
     {
-        throw new NotImplementedException();
-    }
+        var floor = Floors[floorNum];
+        floor.AddElevatorToStoppedElevators(elevator);
+        elevator.RemoveFloorStop(floorNum);
 
+        var direction = elevator.Direction;
+        if (direction == Direction.Idle)
+        {
+            // if the elevator has no next stop go in the direction that most passengers are waiting
+            direction = floor.UpQueue.Count > floor.DownQueue.Count ? Direction.Up : Direction.Down;
+        }
+
+        // Identify which queue of passengers to load into the elevator
+        var passengersQueue = direction == Direction.Up ? floor.UpQueue : floor.DownQueue;
+        int loadedPassengersCount = 0;
+
+        // Collect passengers to load without modifying the queue
+        foreach (var passenger in passengersQueue)
+        {
+            if (elevator.LoadPassenger(passenger))
+            {
+                loadedPassengersCount++;
+            }
+            else
+            {
+                break; // The elevator is full
+            }
+        }
+
+        // Dequeue the passengers that were loaded
+        for (int i = 1; i <= loadedPassengersCount; i++)
+        {
+            passengersQueue.Dequeue(); // Safely remove the passenger from the queue
+        }
+
+        // Move elevator to the next stop
+        elevator.MoveToNextStopAsync(); // Consider awaiting this if necessary
+        floor.RemoveElevatorFromStoppedElevators(elevator);
+
+        // Request lift if there are still passengers waiting
+        if (passengersQueue.Count > 0)
+        {
+            DispatchElevatorToFloorAsync(floorNum, direction);
+        }
+
+        return Task.FromResult(true);
+    }
 
 
     public bool Reset()
@@ -130,7 +184,5 @@ public class ElevatorManager : IElevatorManager
         FloorsRequestingUp.Clear();
         return true;
     }
-
-
 
 }

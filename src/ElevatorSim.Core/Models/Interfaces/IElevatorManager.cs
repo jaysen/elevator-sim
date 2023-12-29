@@ -35,7 +35,7 @@ public interface IElevatorManager
 
     bool AddPassengerToFloor(int floorNum, int destinationFloor);
 
-    Task DispatchElevatorToFloorAsync(int floor, Direction direction);
+    void DispatchElevatorToFloorAsync(int floor, Direction direction);
 
     Task<bool> MoveElevatorToFloorAsync(IElevator elevator, int floorNum);
 

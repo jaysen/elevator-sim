@@ -152,10 +152,16 @@ public class StdElevator : IElevator
         }
     }
 
-    public void LoadPassenger(IPassenger passenger)
+    public bool LoadPassenger(IPassenger passenger)
     {
+        if (CurrentPassengers.Count >= CapacityLimit)
+        {
+            return false;
+        }
         CurrentPassengers.Add(passenger);
         AddFloorStop(passenger.DestinationFloor);
+
+        return true;
     }
 
     public void UnloadPassengersForThisStop()
