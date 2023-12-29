@@ -26,7 +26,7 @@ public interface IElevator
     void AddFloorStop(int floor);
     void RemoveFloorStop(int floor);
 
-    void LoadPassenger(IPassenger passenger);
+    bool LoadPassenger(IPassenger passenger);
     void UnloadPassengersForThisStop();
     
     void ClearPassengers();
