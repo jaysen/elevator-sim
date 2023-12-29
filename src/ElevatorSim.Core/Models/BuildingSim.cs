@@ -31,13 +31,13 @@ public class BuildingSim : IBuildingSim
 
     public bool AddPassengerToSim(int originFloor, int destinationFloor)
     {
-        if (originFloor < 0 || originFloor >= FloorCount)
+        if (originFloor < 0 || originFloor > FloorCount)
         {
-            throw new ArgumentException($"Origin floor must be between 0 and {FloorCount - 1}");
+            throw new ArgumentException($"Origin floor must be between 0 and {FloorCount}");
         }
-        if (destinationFloor < 0 || destinationFloor >= FloorCount)
+        if (destinationFloor < 0 || destinationFloor > FloorCount)
         {
-            throw new ArgumentException($"Destination floor must be between 0 and {FloorCount - 1}");
+            throw new ArgumentException($"Destination floor must be between 0 and {FloorCount}");
         }
         return Manager.AddPassengerToFloor(originFloor, destinationFloor);
     }
