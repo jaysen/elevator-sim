@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "ConsoleUI -default args": {
+    "ConsoleUI args": {
       "commandName": "Project",
       "commandLineArgs": "20 2 10 10"
     },
