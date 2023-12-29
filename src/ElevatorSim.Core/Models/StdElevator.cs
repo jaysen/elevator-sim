@@ -124,6 +124,8 @@ public class StdElevator : IElevator
             Direction = Direction.Down;
             Status = ElevatorStatus.Stopped;
         }
+
+        RemoveFloorStop(CurrentFloor); // remove the floor stop we just stopped at
     }
 
     public async Task MoveToFloorAsync(int floor, ElevatorStatus endStatus = ElevatorStatus.Idle)
