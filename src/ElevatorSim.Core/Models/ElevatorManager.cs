@@ -56,24 +56,26 @@ public class ElevatorManager : IElevatorManager
 
     public IElevator? GetBestElevatorToDispatch(int floorNum, Direction direction)
     {
-        // if elevators are idle or stopped on floorNum, return first one
-        var stoppedElevatorOnFloor = Elevators.FirstOrDefault(e => e.CurrentFloor == floorNum
-            && e.Status != ElevatorStatus.Moving);
-        if (stoppedElevatorOnFloor != null)
+        // Case 1: Elevators stopped or idle on floorNum
+        var stoppedOrIdleOnFloor = Elevators
+            .Where(e => e.CurrentFloor == floorNum && (e.Status == ElevatorStatus.Idle || e.Status == ElevatorStatus.Stopped))
+            .FirstOrDefault();
+
+        if (stoppedOrIdleOnFloor != null)
         {
-            return stoppedElevatorOnFloor;
+            return stoppedOrIdleOnFloor;
         }
 
-        // get the closest of all not moving in wrong direction:
-        var elevatorsNotMovingInWrongDirection = Elevators
-            .Where(e => e.Direction == direction || e.Direction == Direction.Idle);
-        if (elevatorsNotMovingInWrongDirection.Any())
+        // Case 2: Elevators either idle, or moving towards the floor and heading in the right direction
+        var movingTowardsFloorInRightDirection = Elevators
+            .Where(e => e.IsMovingTowardFloor(floorNum) && e.Direction == direction || e.Status == ElevatorStatus.Idle)
+            .OrderBy(e => Math.Abs(e.CurrentFloor - floorNum)) // Then closest ones
+            .FirstOrDefault();
+        if (movingTowardsFloorInRightDirection != null)
         {
-            // If there's only one elevator, or more than one, this approach works for both.
-            return elevatorsNotMovingInWrongDirection
-                .OrderBy(e => Math.Abs(e.CurrentFloor - floorNum))
-                .First();
+            return movingTowardsFloorInRightDirection;
         }
+
 
         // if all moving in the opposite direction,
         // return the elevator that can turn around first

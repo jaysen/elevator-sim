@@ -107,6 +107,68 @@ public class ElevatorManagerTests
     }
 
     #region Elevator Dispatch
+
+    [Fact]
+    public async Task DispatchElevatorToFloorAsync_Should_DispatchElevatorToFloor()
+    {
+        // Arrange
+        int floorCount = 10;
+        int elevatorCount = 2;
+        int defaultElevatorCapacity = 10;
+        int defaultElevatorSpeed = 0;
+        _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
+        var elevator = _manager.Elevators[0];
+
+        // Act
+        await _manager.DispatchElevatorToFloorAsync(0, Direction.Up);
+
+        // Assert
+        elevator.CurrentFloor.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task GetBestElevatorToDispatch_WhenOnFloor_Should_ReturnCorrectly()
+    {
+        // Arrange
+        int floorCount = 10;
+        int elevatorCount = 2;
+        int defaultElevatorCapacity = 10;
+        int defaultElevatorSpeed = 0;
+        _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
+        var elevator1 = _manager.Elevators[0];
+        var elevator2 = _manager.Elevators[1];
+
+        // Act
+        var task1 = elevator1.MoveToFloorAsync(5);
+        var task2 = elevator2.MoveToFloorAsync(6);
+        await Task.WhenAll(task1, task2);
+
+        // Assert
+        var testElevator = _manager.GetBestElevatorToDispatch(5, Direction.Up);
+        testElevator.Should().BeEquivalentTo(elevator1);
+    }
+
+    [Fact]
+    public async Task GetBestElevatorToDispatch_ElevatorBecomesIdleJustBeforeSelection_ShouldConsiderIt()
+    {
+        // Arrange
+        int floorCount = 10;
+        int elevatorCount = 2;
+        int defaultElevatorCapacity = 10;
+        int defaultElevatorSpeed = 10;
+        _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
+        var busyElevator = _manager.Elevators[0];
+        busyElevator.AddFloorStop(5); // Assuming it's below 5
+        var taskMove = busyElevator.MoveToNextStopAsync(); // Starts moving but not yet idle
+
+        // Act
+        await Task.Delay(10); // Short delay to allow the elevator to become idle
+        var chosenElevator = _manager.GetBestElevatorToDispatch(5, Direction.Up);
+
+        // Assert
+        chosenElevator.Should().Be(busyElevator);
+    }
+
     [Fact]
     public async Task GetBestElevatorToDispatch_WhenAllIdle_Should_ReturnCorrectly()
     {
@@ -136,26 +198,56 @@ public class ElevatorManagerTests
         int floorCount = 30;
         int elevatorCount = 3;
         int defaultElevatorCapacity = 10;
-        int defaultElevatorSpeed = 10;
+        int defaultElevatorSpeed = 100;
         _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
-        var elevator1 = _manager.Elevators[0];
-        var elevator2 = _manager.Elevators[1];
-        //var elevator3 = _manager.Elevators[2];
+        var elevator0 = _manager.Elevators[0];
+        var elevator1 = _manager.Elevators[1];
+        var elevator2 = _manager.Elevators[2];
 
         // Act
-        elevator1.AddFloorStop(4);
-        await elevator1.MoveToNextStopAsync();
-        elevator1.AddFloorStop(16);
-        elevator2.AddFloorStop(15);
-        var task1 = elevator1.MoveToNextStopAsync();
-        var task2 = elevator2.MoveToNextStopAsync();
+        elevator0.AddFloorStop(4);
+        await elevator0.MoveToNextStopAsync();
+        elevator0.AddFloorStop(16);
+        elevator1.AddFloorStop(15);
+        var task1 = elevator0.MoveToNextStopAsync();
+        var task2 = elevator1.MoveToNextStopAsync();
         var testElevator = _manager.GetBestElevatorToDispatch(20, Direction.Up);
         await Task.WhenAll(task1, task2);
 
         // Assert
         testElevator.Should().NotBeNull();
-        testElevator.Name.Should().Be(elevator1.Name);
+        testElevator.Name.Should().Be(elevator0.Name);
     }
+
+    [Fact]
+    public async Task GetBestElevatorToDispatch_ClosestMovingAway_ShouldIgnoreAndChooseNext()
+    {
+        // Arrange
+        _manager.Reset();
+        int floorCount = 30;
+        int elevatorCount = 3;
+        int defaultElevatorCapacity = 10;
+        int defaultElevatorSpeed = 100;
+        _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
+        var elevatorCloseButMovingAway = _manager.Elevators[0];
+        var elevatorFarButMovingToward = _manager.Elevators[1];
+
+        // Set elevators' initial states
+        elevatorCloseButMovingAway.AddFloorStop(11); 
+        elevatorCloseButMovingAway.AddFloorStop(30);
+        elevatorFarButMovingToward.AddFloorStop(3);
+        await elevatorCloseButMovingAway.MoveToNextStopAsync(); // move this elevator to 11 - direction up
+        var task1 = elevatorCloseButMovingAway.MoveToNextStopAsync();
+        var task2 = elevatorFarButMovingToward.MoveToNextStopAsync();
+
+        // Act
+        var chosenElevator = _manager.GetBestElevatorToDispatch(10, Direction.Up);
+
+        // Assert
+        chosenElevator.Should().Be(elevatorFarButMovingToward);
+        await Task.WhenAll(task1, task2);
+    }
+
 
     [Fact]
     public async Task GetBestElevatorToDispatch_WhenSomeMovingToward_Should_ReturnFastest()
@@ -179,27 +271,64 @@ public class ElevatorManagerTests
         // Assert
         testElevator.Should().Be(elevator3);
         await Task.WhenAll(task1, task2);
-
-
     }
 
     [Fact]
-    public async Task DispatchElevatorToFloorAsync_Should_DispatchElevatorToFloor()
+    public async Task GetBestElevatorToDispatch_WhenMovingAway_Should_ReturnFastest()
     {
         // Arrange
-        int floorCount = 10;
+        int floorCount = 30;
         int elevatorCount = 2;
         int defaultElevatorCapacity = 10;
-        int defaultElevatorSpeed = 0;
+        int defaultElevatorSpeed = 100;
         _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
-        var elevator = _manager.Elevators[0];
+        var elevator1 = _manager.Elevators[0];
+        var elevator2 = _manager.Elevators[1];
+        await Task.WhenAll(elevator1.MoveToFloorAsync(4), elevator2.MoveToFloorAsync(5));
 
         // Act
-        await _manager.DispatchElevatorToFloorAsync(0, Direction.Up);
+        elevator1.AddFloorStop(6);
+        elevator1.AddFloorStop(9);
+        elevator2.AddFloorStop(10);
+        elevator2.AddFloorStop(12);
+        var task1 = elevator1.MoveToNextStopAsync();
+        var task2 = elevator2.MoveToNextStopAsync();
+        var testElevator = _manager.GetBestElevatorToDispatch(1, Direction.Up);
 
         // Assert
-        elevator.CurrentFloor.Should().Be(0);
+        testElevator.Should().Be(elevator1);
+        await Task.WhenAll(task1, task2);
     }
+
+    [Fact]
+    public async Task GetBestElevatorToDispatch_WhenMovingAway_Should_ReturnFastest2()
+    {
+        // Arrange
+        int floorCount = 30;
+        int elevatorCount = 2;
+        int defaultElevatorCapacity = 10;
+        int defaultElevatorSpeed = 100;
+        _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
+        var elevator1 = _manager.Elevators[0];
+        var elevator2 = _manager.Elevators[1];
+        //await Task.WhenAll(elevator0.MoveToFloorAsync(2), elevator1.MoveToFloorAsync(2));
+
+        // Act
+        elevator1.AddFloorStop(6);
+        elevator1.AddFloorStop(14);
+        elevator1.AddFloorStop(3);
+        elevator2.AddFloorStop(10);
+        elevator2.AddFloorStop(12);
+        var task1 = elevator1.MoveToNextStopAsync();
+        var task2 = elevator2.MoveToNextStopAsync();
+        var testElevator = _manager.GetBestElevatorToDispatch(1, Direction.Up);
+
+        // Assert
+        testElevator.Should().Be(elevator2);
+        await Task.WhenAll(task1, task2);
+    }
+
+
 
     #endregion GetBestElevatorToDispatch
 
