@@ -19,6 +19,8 @@ public interface IElevator
     List<IPassenger> CurrentPassengers { get; }
     SortedSet<int> FloorStops { get; }
 
+    event EventHandler<ElevatorStopEventArgs> StoppedAtFloor;
+
     void SetFloor(int floorNum);
     Task MoveAsync();
     Task MoveToNextStopAsync();
@@ -35,5 +37,6 @@ public interface IElevator
     void ClearFloorStops();
 
     void Reset();
+
 
 }
