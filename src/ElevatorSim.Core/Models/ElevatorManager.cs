@@ -140,6 +140,10 @@ public class ElevatorManager : IElevatorManager
             direction = floor.UpQueue.Count > floor.DownQueue.Count ? Direction.Up : Direction.Down;
         }
 
+        // Unload passengers
+        elevator.UnloadPassengersForThisStop();
+
+
         // Identify which queue of passengers to load into the elevator
         var passengersQueue = direction == Direction.Up ? floor.UpQueue : floor.DownQueue;
         int loadedPassengersCount = 0;
