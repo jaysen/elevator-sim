@@ -6,28 +6,45 @@ using ElevatorSim.Core.Models.Interfaces;
 using ElevatorSim.Core.Services;
 using ElevatorSim.Core.Services.Interfaces;
 
-internal class ConsoleApp
+internal class ConsoleApp(IBuildingSimFactory simFactory)
 {
-    private ConsoleHelper _con = new();
-    private bool _argsUsed = false;
-    private readonly IBuildingSimFactory _simFactory;
+    private readonly ConsoleHelper _con = new();
+    private readonly IBuildingSimFactory _simFactory = simFactory;
     private IBuildingSim? sim;
     private IElevatorManager? manager;
-    
 
-    public ConsoleApp(IBuildingSimFactory simFactory)
-    {
-        _simFactory = simFactory;
-    }
-    public void Run(string[] args)
+    internal async Task RunAsync(string[] args)
     {
         _con.Write("ElevatorSim - Under Construction...", ConsoleColor.Magenta);
         _con.Write("");
 
-        SetupSim(args);
+        //SetupSim(args); //TODO: disabling proper setup while using SetupSimForTesting()
+        SetupSimForTesting();
 
-        DisplayElevatorStatus();
+        if (sim is null || manager is null)
+        {
+            _con.Write("Sim or manager setup failed. Exiting...", ConsoleColor.Red);
+            return;
+        }
 
+        var displayTasks = DisplayElevatorStatusLoop();
+        var moveTasks = sim.MoveElevators();
+
+        await Task.WhenAll(displayTasks, moveTasks);
+
+        _con.Write("Simulation ending.", ConsoleColor.DarkCyan);
+    }
+
+    private async Task DisplayElevatorStatusLoop()
+    {
+        var moving = true;
+        while (moving)
+        {
+            await Task.Delay(10);
+            Console.Clear();
+            DisplayElevatorStatus();
+            moving = sim.AnyElevatorsMoving;
+        }
     }
 
     /// <summary>
@@ -87,8 +104,7 @@ internal class ConsoleApp
     /// <returns>bool: True if sim setup, false otherwise</returns>
     private bool SetupSim(string[] args)
     {
-        _argsUsed = args.Length > 0;
-        _con.Write("Simulation setup:", ConsoleColor.Cyan);
+        _con.Write("Simulation setup:", ConsoleColor.DarkCyan);
 
         // Parse command-line arguments or prompt for input if they are not provided
         int floors = args.Length > 0 ? int.Parse(args[0]) : _con.PromptForInt("Enter the number of floors:", ConsoleColor.Green);
@@ -109,6 +125,22 @@ internal class ConsoleApp
         _con.Write("");
         DisplaySimSetup(ConsoleColor.Yellow);
         return true;
+    }
+
+    private void SetupSimForTesting()
+    {
+        SetupSim(["30", "4", "10", "1000"]);
+
+
+        sim.SetElevatorFloor(1, 20); // Elevator 1 starts at floor 20
+        //sim.SetElevatorFloor(2, 30); // Elevator 2 starts at floor 30
+        sim.AddPassengerToSim(1, 20);
+        sim.AddPassengerToSim(4, 7);
+        sim.AddPassengerToSim(8, 20);
+        sim.AddPassengerToSim(14, 20);
+        sim.AddPassengerToSim(15, 2);
+        sim.AddPassengerToSim(19, 20);
+        sim.AddPassengerToSim(26, 20);
     }
 
     /// <summary>
