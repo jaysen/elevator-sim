@@ -10,12 +10,11 @@ using ElevatorSim.Core.Services.Interfaces;
 //TODO: add DI for Dispatch Strategies
 var serviceProvider = new ServiceCollection()
     .AddSingleton<IBuildingSimFactory, StdBuildingSimFactory>()
-    .AddTransient<ConsoleApp>() 
+    .AddTransient<ConsoleApp>()
     .BuildServiceProvider();
 
 
 // Resolve and run the ConsoleApplication
 using var scope = serviceProvider.CreateScope();
 var consoleApp = scope.ServiceProvider.GetService<ConsoleApp>();
-consoleApp?.Run(args);
-
+await consoleApp.RunAsync(args);

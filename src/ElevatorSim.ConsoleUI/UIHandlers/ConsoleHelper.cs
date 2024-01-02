@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 namespace ElevatorSim.ConsoleUI.UIHandlers;
 public class ConsoleHelper
 {
+    public ConsoleHelper()
+    {
+        // Set console encoding to UTF8 to support unicode characters
+        Console.OutputEncoding = Encoding.UTF8;
+    }
     public void Write(string message, ConsoleColor? color = null, bool includeNewLine = true)
     {
         if (color.HasValue)

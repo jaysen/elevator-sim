@@ -51,7 +51,6 @@ public class ElevatorManager : IElevatorManager
             return;
         }
         bestElevator.AddFloorStop(floorNum);
-        //await bestElevator.MoveToNextStopAsync();
     }
 
     public IElevator? GetBestElevatorToDispatch(int floorNum, Direction direction)
@@ -126,7 +125,7 @@ public class ElevatorManager : IElevatorManager
         return floor.AddPassenger(passenger); 
     }
 
-    public Task<bool> ProcessFloorStop(IElevator elevator, int floorNum)
+    public void ProcessFloorStop(IElevator elevator, int floorNum)
     {
         var floor = Floors[floorNum];
         floor.AddElevatorToStoppedElevators(elevator);
@@ -163,7 +162,6 @@ public class ElevatorManager : IElevatorManager
         }
 
         // Move elevator to the next stop
-        elevator.MoveToNextStopAsync(); // Consider awaiting this if necessary
         floor.RemoveElevatorFromStoppedElevators(elevator);
 
         // Request lift if there are still passengers waiting
@@ -171,10 +169,13 @@ public class ElevatorManager : IElevatorManager
         {
             DispatchElevatorToFloorAsync(floorNum, direction);
         }
-
-        return Task.FromResult(true);
     }
 
+    public async Task MoveAllElevators()
+    {
+        var tasks = Elevators.Select(e => e.MoveAsync());
+        await Task.WhenAll(tasks);
+    }
 
     public bool Reset()
     {
