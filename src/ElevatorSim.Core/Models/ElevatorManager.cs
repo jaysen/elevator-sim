@@ -51,7 +51,6 @@ public class ElevatorManager : IElevatorManager
             return;
         }
         bestElevator.AddFloorStop(floorNum);
-        //await bestElevator.MoveToNextStopAsync();
     }
 
     public IElevator? GetBestElevatorToDispatch(int floorNum, Direction direction)
@@ -163,7 +162,6 @@ public class ElevatorManager : IElevatorManager
         }
 
         // Move elevator to the next stop
-        elevator.MoveToNextStopAsync(); // Consider awaiting this if necessary
         floor.RemoveElevatorFromStoppedElevators(elevator);
 
         // Request lift if there are still passengers waiting
@@ -173,6 +171,11 @@ public class ElevatorManager : IElevatorManager
         }
     }
 
+    public async Task MoveAllElevators()
+    {
+        var tasks = Elevators.Select(e => e.MoveAsync());
+        await Task.WhenAll(tasks);
+    }
 
     public bool Reset()
     {

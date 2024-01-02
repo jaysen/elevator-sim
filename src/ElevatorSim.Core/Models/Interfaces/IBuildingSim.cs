@@ -20,6 +20,8 @@ public interface IBuildingSim
     void ResetSim();
 
     bool AnyElevatorsMoving { get; }
+
+    Task MoveElevators();
     
     IElevatorManager Manager { get; }
 
