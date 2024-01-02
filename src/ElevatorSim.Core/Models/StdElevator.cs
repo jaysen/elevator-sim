@@ -95,6 +95,14 @@ public class StdElevator : IElevator
         FloorStops.Clear();
     }
 
+    public async Task MoveAsync()
+    {
+        while (NextStop is not null)
+        {
+            await MoveToNextStopAsync();
+        }
+    }
+
     public async Task MoveToNextStopAsync()
     {
         if (NextStop is null)
@@ -106,24 +114,7 @@ public class StdElevator : IElevator
 
         await MoveToFloorAsync(NextStop.Value, ElevatorStatus.Stopped);
 
-        NextStop = FindBestNextStop();
-
-        if (NextStop is null)
-        {
-            Status = ElevatorStatus.Idle;
-            Direction = Direction.Idle;
-        }
-        else
-        if (NextStop > CurrentFloor)
-        {
-            Direction = Direction.Up;
-            Status = ElevatorStatus.Stopped;
-        }
-        else
-        {
-            Direction = Direction.Down;
-            Status = ElevatorStatus.Stopped;
-        }
+        SetBestNextStop();
 
         RemoveFloorStop(CurrentFloor); // remove the floor stop we just stopped at
     }
@@ -136,14 +127,7 @@ public class StdElevator : IElevator
         while (CurrentFloor != floor)
         {
             await Task.Delay(TimeBetweenFloors);
-            if (Direction == Direction.Up)
-            {
-                CurrentFloor++;
-            }
-            else
-            {
-                CurrentFloor--;
-            }
+            CurrentFloor = Direction == Direction.Up ? CurrentFloor + 1 : CurrentFloor - 1;
         }
         Status = endStatus;
         if (Status == ElevatorStatus.Idle)
@@ -151,6 +135,7 @@ public class StdElevator : IElevator
             Direction = Direction.Idle;
         }
     }
+
 
     public bool LoadPassenger(IPassenger passenger)
     {
@@ -198,6 +183,35 @@ public class StdElevator : IElevator
             return true;
 
         return false;
+    }
+
+    public void SetFloor(int floorNum)
+    {
+        CurrentFloor = floorNum;
+        Direction = Direction.Idle;
+        Status = ElevatorStatus.Idle;
+    }
+
+    public void SetBestNextStop()
+    {
+        NextStop = FindBestNextStop();
+        if (NextStop is null)
+        {
+            Status = ElevatorStatus.Idle;
+            Direction = Direction.Idle;
+            return;
+        }
+        if (NextStop > CurrentFloor)
+        {
+            Direction = Direction.Up;
+            Status = ElevatorStatus.Stopped;
+        }
+        else
+        {
+            Direction = Direction.Down;
+            Status = ElevatorStatus.Stopped;
+        }
+
     }
 
     #region Private Methods

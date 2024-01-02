@@ -37,9 +37,11 @@ public interface IElevatorManager
 
     void DispatchElevatorToFloorAsync(int floor, Direction direction);
 
+    Task MoveAllElevators();
+
     Task<bool> MoveElevatorToFloorAsync(IElevator elevator, int floorNum);
 
-    Task<bool> ProcessFloorStop(IElevator elevator, int floorNum);
+    void ProcessFloorStop(IElevator elevator, int floorNum);
 
     bool Reset();
 

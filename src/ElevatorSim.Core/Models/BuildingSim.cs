@@ -11,6 +11,20 @@ public class BuildingSim : IBuildingSim
     public int ElevatorCount { get; private set; }
     public int FloorCount { get; private set; }
     public IElevatorManager Manager { get; private set; }
+    public bool AnyElevatorsMoving
+    {
+        get
+        {
+            foreach (var elevator in Manager.Elevators)
+            {
+                if (elevator.Status != ElevatorStatus.Idle)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 
     public BuildingSim(int floorCount, int elevatorCount, int defaultCapacity, int defaultSpeed)
     {
@@ -47,5 +61,15 @@ public class BuildingSim : IBuildingSim
         ElevatorCount = 0;
         FloorCount = 0;
         Manager.Reset();
+    }
+
+    public void SetElevatorFloor(int elevatorNum, int floorNum)
+    {
+        Manager.Elevators[elevatorNum].SetFloor(floorNum);
+    }
+
+    public async Task MoveElevators()
+    {
+        await Manager.MoveAllElevators();
     }
 }
