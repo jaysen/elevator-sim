@@ -31,8 +31,10 @@ public class ElevatorManager : IElevatorManager
 
         for (int i = 0; i < elevatorCount; i++)
         {
-            var name = $"Elevator {i}";
-            Elevators.Add(new StdElevator(name, defaultElevatorCapacity, defaultElevatorSpeed));
+            var name = $"Elevator {i+1}";
+            var elevator = new StdElevator(name, defaultElevatorCapacity, defaultElevatorSpeed);
+            elevator.StoppedAtFloor += HandleElevatorStop;
+            Elevators.Add(elevator);
         }
         return true;
     }
@@ -184,6 +186,13 @@ public class ElevatorManager : IElevatorManager
         FloorsRequestingDown.Clear();
         FloorsRequestingUp.Clear();
         return true;
+    }
+
+    private void HandleElevatorStop(object sender, ElevatorStopEventArgs e)
+    {
+        // This method will be called whenever an elevator stops
+        Console.WriteLine(e.FloorNumber);
+        ProcessFloorStop((IElevator)sender, e.FloorNumber);
     }
 
 }

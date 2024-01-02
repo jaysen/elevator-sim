@@ -124,12 +124,19 @@ public class StdElevator : IElevator
         Status = ElevatorStatus.Moving;
         Direction = CurrentFloor < floor ? Direction.Up : Direction.Down;
 
+        // move to floor
         while (CurrentFloor != floor)
         {
             await Task.Delay(TimeBetweenFloors);
             CurrentFloor = Direction == Direction.Up ? CurrentFloor + 1 : CurrentFloor - 1;
         }
+        
+        // stop at floor
+        Status = ElevatorStatus.Stopped;
+
         Status = endStatus;
+
+        OnStoppedAtFloor(CurrentFloor);
         if (Status == ElevatorStatus.Idle)
         {
             Direction = Direction.Idle;
@@ -212,6 +219,13 @@ public class StdElevator : IElevator
             Status = ElevatorStatus.Stopped;
         }
 
+    }
+
+    public event EventHandler<ElevatorStopEventArgs> StoppedAtFloor;
+
+    protected virtual void OnStoppedAtFloor(int floorNumber)
+    {
+        StoppedAtFloor?.Invoke(this, new ElevatorStopEventArgs { FloorNumber = floorNumber, Direction = Direction});
     }
 
     #region Private Methods
