@@ -200,6 +200,12 @@ public class StdElevator : IElevator
         return false;
     }
 
+    public void SetFloor(int floorNum)
+    {
+        CurrentFloor = floorNum;
+        Direction = Direction.Idle;
+        Status = ElevatorStatus.Idle;
+    }
     #region Private Methods
 
     // TODO: This is less than elegant. Refactor.

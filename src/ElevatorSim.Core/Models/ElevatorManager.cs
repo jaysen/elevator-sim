@@ -126,7 +126,7 @@ public class ElevatorManager : IElevatorManager
         return floor.AddPassenger(passenger); 
     }
 
-    public Task<bool> ProcessFloorStop(IElevator elevator, int floorNum)
+    public void ProcessFloorStop(IElevator elevator, int floorNum)
     {
         var floor = Floors[floorNum];
         floor.AddElevatorToStoppedElevators(elevator);
@@ -171,8 +171,6 @@ public class ElevatorManager : IElevatorManager
         {
             DispatchElevatorToFloorAsync(floorNum, direction);
         }
-
-        return Task.FromResult(true);
     }
 
 

@@ -39,7 +39,7 @@ public interface IElevatorManager
 
     Task<bool> MoveElevatorToFloorAsync(IElevator elevator, int floorNum);
 
-    Task<bool> ProcessFloorStop(IElevator elevator, int floorNum);
+    void ProcessFloorStop(IElevator elevator, int floorNum);
 
     bool Reset();
 

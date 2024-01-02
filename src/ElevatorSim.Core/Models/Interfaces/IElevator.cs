@@ -19,6 +19,7 @@ public interface IElevator
     List<IPassenger> CurrentPassengers { get; }
     SortedSet<int> FloorStops { get; }
     
+    void SetFloor(int floorNum);
     Task MoveToNextStopAsync();
     Task MoveToFloorAsync(int floorNum, ElevatorStatus endStatus = ElevatorStatus.Idle);
     bool IsMovingTowardFloor(int floorNum);
