@@ -27,7 +27,7 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
             return;
         }
 
-        var displayTasks = DisplayElevatorStatusLoop();
+        var displayTasks = DisplayElevatorStatusLoop(sim);
         var moveTasks = sim.MoveElevators();
 
         await Task.WhenAll(displayTasks, moveTasks);
@@ -35,60 +35,16 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
         _con.Write("Simulation ending.", ConsoleColor.DarkCyan);
     }
 
-    private async Task DisplayElevatorStatusLoop()
+    private async Task DisplayElevatorStatusLoop(IBuildingSim sim)
     {
         var moving = true;
         while (moving)
         {
             await Task.Delay(10);
             Console.Clear();
-            DisplayElevatorStatus();
+            _con.DisplayElevatorsStatus(sim);
             moving = sim.AnyElevatorsMoving;
         }
-    }
-
-    /// <summary>
-    /// Displays the status of each elevator in the console.
-    /// </summary>
-    private void DisplayElevatorStatus()
-    {
-        _con.Write(new string('-', 80), ConsoleColor.DarkCyan);
-        _con.Write("Elevator Status:", ConsoleColor.DarkCyan);
-
-        foreach (var elevator in manager.Elevators)
-        {
-            string elevatorDirection = GetDirectionSymbol(elevator.Direction);
-            string passengerCount = elevator.CurrentPassengers.Count.ToString();
-            string destinations = FormatDestinations(elevator.FloorStops);
-
-            _con.Write($"[{elevator.Name}] Floor {elevator.CurrentFloor} {elevatorDirection}  |  Passengers: {passengerCount}  |  Destinations: {destinations}", ConsoleColor.Gray);
-        }
-
-        _con.Write(new string('-', 80), ConsoleColor.DarkCyan);
-    }
-
-    private string GetDirectionSymbol(Direction direction)
-    {
-        return direction switch
-        {
-            Direction.Up => "↑",
-            Direction.Down => "↓",
-            _ => "-"
-        };
-    }
-
-    /// <summary>
-    /// Formats the destinations of an elevator into a string.
-    /// </summary>
-    /// <param name="floorStops">A sorted set of floor stops.</param>
-    /// <returns>A formatted string of destinations.</returns>
-    private string FormatDestinations(SortedSet<int> floorStops)
-    {
-        if (floorStops == null || floorStops.Count == 0)
-        {
-            return "None";
-        }
-        return string.Join(", ", floorStops);
     }
 
     /// <summary>
@@ -123,7 +79,7 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
         }
 
         _con.Write("");
-        DisplaySimSetup(ConsoleColor.Yellow);
+        _con.DisplaySimSetup(sim, ConsoleColor.Yellow);
         return true;
     }
 
@@ -135,23 +91,13 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
         sim.SetElevatorFloor(1, 20); // Elevator 1 starts at floor 20
         //sim.SetElevatorFloor(2, 30); // Elevator 2 starts at floor 30
         sim.AddPassengerToSim(1, 20);
-        sim.AddPassengerToSim(4, 7);
-        sim.AddPassengerToSim(8, 20);
-        sim.AddPassengerToSim(14, 20);
-        sim.AddPassengerToSim(15, 2);
-        sim.AddPassengerToSim(19, 20);
+        sim.AddPassengerToSim(4, 3);
+        sim.AddPassengerToSim(8, 22);
+        sim.AddPassengerToSim(14, 22);
+        sim.AddPassengerToSim(15, 7);
+        sim.AddPassengerToSim(19, 21);
         sim.AddPassengerToSim(26, 20);
     }
 
-    /// <summary>
-    /// Writes the simulation setup to the console
-    /// </summary>
-    private void DisplaySimSetup(ConsoleColor color = ConsoleColor.Gray)
-    {
-        _con.Write($"Elevator Count = {sim.ElevatorCount}", color);
-        _con.Write($"Floor Count = {sim.FloorCount}", color);
-        _con.Write($"Default Elevator Capacity = {sim.DefaultElevatorCapacity}", color);
-        _con.Write($"Default Elevator Speed = {sim.DefaultElevatorSpeed}", color);
 
-    }
 }
