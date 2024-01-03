@@ -239,36 +239,38 @@ public class StdElevatorTests
     {
         // Arrange
         var elevator = new StdElevator("Elevator1", 10, 1000, 10); // start floor is 10 
-        elevator.AddFloorStop(13);
         elevator.AddFloorStop(16);
+        elevator.AddFloorStop(13);
 
         // Act
         await elevator.MoveToNextStopAsync(); // move to 13
         elevator.AddFloorStop(12);
 
         // Assert
-        // 12 is in opposite direction, so next stop should not change, even though it is closer
+        // 2 is in opposite direction, so next stop should not change, even though it is closer
         elevator.NextStop.Should().Be(16);
+        //await move;
 
 
     }
 
     [Fact]
-    // should not update next-stop when the new stop is in different direction than elevator is moving
+    // should update next-stop when the new stop is before nextstop in direction than elevator is moving
     public async Task AddFloorStop_WhenMoving_ShouldUpdateNextStopCorrectly2()
     {
         // Arrange
-        var elevator = new StdElevator("Elevator1", 10, 0, 10); // start floor is 10 
-        elevator.AddFloorStop(13);
-        elevator.AddFloorStop(18);
+        var elevator = new StdElevator("Elevator1", 0, 100, 0); // start floor is 0
+        elevator.AddFloorStop(15);
 
         // Act
-        await elevator.MoveToNextStopAsync(); // move to 13
-        elevator.AddFloorStop(17);
+        Task move = elevator.MoveToNextStopAsync(); // move to 15
+        elevator.AddFloorStop(13);
+
 
         // Assert
-        // 17 is in same direction, so next stop should change to 17 from 18
-        elevator.NextStop.Should().Be(17);
+        // 13 is in same direction, so next stop should change to 13 from 15
+        elevator.NextStop.Should().Be(13);
+        await move;
 
     }
 
@@ -304,7 +306,7 @@ public class StdElevatorTests
     }
 
     [Fact]
-    public async void UnloadPassengersForThisStop_ShouldRemovePassengersWithDestinationFloorMatchingCurrentFloor()
+    public void UnloadPassengersForThisStop_ShouldRemovePassengersWithDestinationFloorMatchingCurrentFloor()
     {
         // Arrange
         var elevator = new StdElevator("Elevator1", 10, 0);
@@ -316,7 +318,7 @@ public class StdElevatorTests
         elevator.LoadPassenger(passenger3);
 
         // Act
-        await elevator.MoveToNextStopAsync(); // move to 5
+        elevator.SetFloor(5); // move to 5
         elevator.UnloadPassengersForThisStop(); // unload passenger1
 
         // Assert
