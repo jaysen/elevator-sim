@@ -24,13 +24,15 @@ public interface IElevator
     void SetFloor(int floorNum);
     Task MoveAsync();
     Task MoveToNextStopAsync();
-    Task MoveToFloorAsync(int floorNum, ElevatorStatus endStatus = ElevatorStatus.Idle);
+    Task MoveToFloorAsync(int floorNum);
     bool IsMovingTowardFloor(int floorNum);
 
     void AddFloorStop(int floor);
     void RemoveFloorStop(int floor);
 
     bool LoadPassenger(IPassenger passenger);
+    void SetBestNextStop();
+
     void UnloadPassengersForThisStop();
     
     void ClearPassengers();

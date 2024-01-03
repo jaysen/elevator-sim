@@ -69,7 +69,7 @@ public class ElevatorManager : IElevatorManager
 
         // Case 2: Elevators either idle, or moving towards the floor and heading in the right direction
         var movingTowardsFloorInRightDirection = Elevators
-            .Where(e => e.IsMovingTowardFloor(floorNum) && e.Direction == direction || e.Status == ElevatorStatus.Idle)
+            .Where(e => (e.IsMovingTowardFloor(floorNum) && e.Direction == direction) || (e.Status == ElevatorStatus.Idle && e.FloorStops.Count == 0))
             .OrderBy(e => Math.Abs(e.CurrentFloor - floorNum)) // Then closest ones
             .FirstOrDefault();
         if (movingTowardsFloorInRightDirection != null)
@@ -134,7 +134,7 @@ public class ElevatorManager : IElevatorManager
         elevator.RemoveFloorStop(floorNum);
 
         var direction = elevator.Direction;
-        if (direction == Direction.Idle)
+        if (direction == Direction.Idle || elevator.FloorStops.Count == 0)
         {
             // if the elevator has no next stop go in the direction that most passengers are waiting
             direction = floor.UpQueue.Count > floor.DownQueue.Count ? Direction.Up : Direction.Down;
@@ -143,31 +143,17 @@ public class ElevatorManager : IElevatorManager
         // Unload passengers
         elevator.UnloadPassengersForThisStop();
 
-
         // Identify which queue of passengers to load into the elevator
         var passengersQueue = direction == Direction.Up ? floor.UpQueue : floor.DownQueue;
-        int loadedPassengersCount = 0;
 
-        // Collect passengers to load without modifying the queue
-        foreach (var passenger in passengersQueue)
+        // load passengers from queue while lift not full
+        while (passengersQueue.Count > 0 && elevator.CurrentPassengers.Count < elevator.CapacityLimit)
         {
-            if (elevator.LoadPassenger(passenger))
-            {
-                loadedPassengersCount++;
-            }
-            else
-            {
-                break; // The elevator is full
-            }
-        }
-
-        // Dequeue the passengers that were loaded
-        for (int i = 1; i <= loadedPassengersCount; i++)
-        {
-            passengersQueue.Dequeue(); // Safely remove the passenger from the queue
+            elevator.LoadPassenger(passengersQueue.Dequeue());
         }
 
         // Move elevator to the next stop
+        elevator.SetBestNextStop();
         floor.RemoveElevatorFromStoppedElevators(elevator);
 
         // Request lift if there are still passengers waiting
@@ -192,11 +178,15 @@ public class ElevatorManager : IElevatorManager
         return true;
     }
 
+    /// <summary>
+    /// This method is called when an elevator stops at a floor.
+    /// </summary>
+    /// <param name="sender">Elevator</param>
+    /// <param name="e">ElevatorStopEventArgs</param>
     private void HandleElevatorStop(object sender, ElevatorStopEventArgs e)
     {
-        // This method will be called whenever an elevator stops
-        Console.WriteLine(e.FloorNumber);
-        ProcessFloorStop((IElevator)sender, e.FloorNumber);
+        var el = (IElevator)sender;
+        ProcessFloorStop(el, e.FloorNumber);
     }
 
 }

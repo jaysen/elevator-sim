@@ -111,15 +111,19 @@ public class StdElevator : IElevator
             Direction = Direction.Idle;
             return;
         }
-
-        await MoveToFloorAsync(NextStop.Value, ElevatorStatus.Stopped);
-
-        SetBestNextStop();
+        Status = ElevatorStatus.Moving;
+        Direction = CurrentFloor < NextStop ? Direction.Up : Direction.Down;
+        while (CurrentFloor != NextStop)
+        {
+            await Task.Delay(TimeBetweenFloors);
+            CurrentFloor = Direction == Direction.Up ? CurrentFloor + 1 : CurrentFloor - 1;
+        }
 
         RemoveFloorStop(CurrentFloor); // remove the floor stop we just stopped at
+        OnStoppedAtFloor(CurrentFloor);
     }
 
-    public async Task MoveToFloorAsync(int floor, ElevatorStatus endStatus = ElevatorStatus.Idle)
+    public async Task MoveToFloorAsync(int floor)
     {
         Status = ElevatorStatus.Moving;
         Direction = CurrentFloor < floor ? Direction.Up : Direction.Down;
@@ -129,17 +133,6 @@ public class StdElevator : IElevator
         {
             await Task.Delay(TimeBetweenFloors);
             CurrentFloor = Direction == Direction.Up ? CurrentFloor + 1 : CurrentFloor - 1;
-        }
-        
-        // stop at floor
-        Status = ElevatorStatus.Stopped;
-
-        Status = endStatus;
-
-        OnStoppedAtFloor(CurrentFloor);
-        if (Status == ElevatorStatus.Idle)
-        {
-            Direction = Direction.Idle;
         }
     }
 
@@ -152,7 +145,7 @@ public class StdElevator : IElevator
         }
         CurrentPassengers.Add(passenger);
         AddFloorStop(passenger.DestinationFloor);
-
+        SetBestNextStop();
         return true;
     }
 

@@ -87,16 +87,16 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
     {
         SetupSim(["30", "4", "10", "1000"]);
 
+        sim.SetElevatorFloor(3, 20); // Elevator 1 starts at floor 20
+        sim.SetElevatorFloor(2, 30); // Elevator 2 starts at floor 30
 
-        sim.SetElevatorFloor(1, 20); // Elevator 1 starts at floor 20
-        //sim.SetElevatorFloor(2, 30); // Elevator 2 starts at floor 30
-        sim.AddPassengerToSim(1, 20);
-        sim.AddPassengerToSim(4, 3);
-        sim.AddPassengerToSim(8, 22);
-        sim.AddPassengerToSim(14, 22);
-        sim.AddPassengerToSim(15, 7);
+        sim.AddPassengerToSim(1, 6);
+        sim.AddPassengerToSim(4, 2);
+        //sim.AddPassengerToSim(8, 22);
+        //sim.AddPassengerToSim(14, 22);
+        //sim.AddPassengerToSim(15, 7);
         sim.AddPassengerToSim(19, 21);
-        sim.AddPassengerToSim(26, 20);
+        //sim.AddPassengerToSim(26, 20);
     }
 
 

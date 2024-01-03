@@ -65,7 +65,7 @@ public class BuildingSim : IBuildingSim
 
     public void SetElevatorFloor(int elevatorNum, int floorNum)
     {
-        Manager.Elevators[elevatorNum].SetFloor(floorNum);
+        Manager.Elevators[elevatorNum-1].SetFloor(floorNum);
     }
 
     public async Task MoveElevators()

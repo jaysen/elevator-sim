@@ -9,7 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElevatorSim.Core", "Elevato
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElevatorSim.Tests.Core", "..\tests\ElevatorSim.Tests.Core\ElevatorSim.Tests.Core.csproj", "{266B102E-C0E0-4D49-88AB-D7CAD13B9020}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElevatorSim.Tests.Integration", "..\tests\ElevatorSim.Tests.Integration\ElevatorSim.Tests.Integration.csproj", "{1EAB9C42-536C-4DF1-9EA8-9F3C9657CE83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElevatorSim.Tests.Integration", "..\tests\ElevatorSim.Tests.Integration\ElevatorSim.Tests.Integration.csproj", "{1EAB9C42-536C-4DF1-9EA8-9F3C9657CE83}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D7F8A68B-1209-4EF5-8679-DB7CA9407699} = {D7F8A68B-1209-4EF5-8679-DB7CA9407699}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
