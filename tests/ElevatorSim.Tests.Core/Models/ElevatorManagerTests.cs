@@ -29,7 +29,7 @@ public class ElevatorManagerTests
         // Assert
         result.Should().BeTrue();
         _manager.Elevators.Should().HaveCount(elevatorCount);
-        _manager.Floors.Should().HaveCount(floorCount);
+        _manager.Floors.Should().HaveCount(floorCount + 1); // +1 for ground floor
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class ElevatorManagerTests
     }
 
     [Fact]
-    public async Task GetBestElevatorToDispatch_WhenOnFloor_Should_ReturnCorrectly()
+    public void GetBestElevatorToDispatch_WhenOnFloor_Should_ReturnCorrectly()
     {
         // Arrange
         int floorCount = 10;
@@ -139,9 +139,8 @@ public class ElevatorManagerTests
         var elevator2 = _manager.Elevators[1];
 
         // Act
-        var task1 = elevator1.MoveToFloorAsync(5);
-        var task2 = elevator2.MoveToFloorAsync(6);
-        await Task.WhenAll(task1, task2);
+        elevator1.SetFloor(5);
+        elevator2.SetFloor(6);
 
         // Assert
         var testElevator = _manager.GetBestElevatorToDispatch(5, Direction.Up);
@@ -170,7 +169,7 @@ public class ElevatorManagerTests
     }
 
     [Fact]
-    public async Task GetBestElevatorToDispatch_WhenAllIdle_Should_ReturnCorrectly()
+    public void GetBestElevatorToDispatch_WhenAllIdle_Should_ReturnCorrectly()
     {
         // Arrange
         int floorCount = 10;
@@ -182,8 +181,8 @@ public class ElevatorManagerTests
         var elevator2 = _manager.Elevators[1];
 
         // Act
-        await elevator1.MoveToFloorAsync(5);
-        await elevator2.MoveToFloorAsync(10);
+        elevator1.SetFloor(5);
+        elevator2.SetFloor(10);
 
         // Assert
         var testElevator = _manager.GetBestElevatorToDispatch(0, Direction.Up);
@@ -344,12 +343,11 @@ public class ElevatorManagerTests
         var elevator2 = _manager.Elevators[1];
 
 
-        elevator1.AddFloorStop(9); 
-        elevator2.AddFloorStop(10); 
-        await elevator1.MoveToNextStopAsync(); // move this elevator to 5
-        await elevator2.MoveToNextStopAsync(); // move this elevator to 10
+        elevator1.SetFloor(9);
+        elevator2.SetFloor(10);
 
-        elevator1.AddFloorStop(15);
+
+        elevator1.AddFloorStop(11);
         elevator1.AddFloorStop(2);  // elevator 1 will turn around at 11 and need to go past requested floor
         elevator2.AddFloorStop(18);
         elevator2.AddFloorStop(25); // elevator 2 will turn around at 12 and not need to go past requested floor
@@ -369,7 +367,7 @@ public class ElevatorManagerTests
     #region ProcessFloorStop
 
     [Fact]
-    public async Task ProcessFloorStop_WithIdleElevatorAndMoreUpPassengers_ShouldLoadAndGoUp()
+    public void ProcessFloorStop_WithIdleElevatorAndMoreUpPassengers_ShouldLoadAndGoUp()
     {
         // Arrange
         int floorCount = 30;
@@ -379,8 +377,7 @@ public class ElevatorManagerTests
         _manager.Setup(floorCount, elevatorCount, defaultElevatorCapacity, defaultElevatorSpeed);
         var floorNum = 5;
         var elevator = _manager.Elevators[0];
-        elevator.AddFloorStop(floorNum);
-        await elevator.MoveToNextStopAsync();
+        elevator.SetFloor(floorNum);
         
         _manager.AddPassengerToFloor(floorNum, 6);
         _manager.AddPassengerToFloor(floorNum, 8);
@@ -389,10 +386,9 @@ public class ElevatorManagerTests
         _manager.AddPassengerToFloor(floorNum, 1);
 
         // Act
-        var result = await _manager.ProcessFloorStop(elevator, floorNum);
+        _manager.ProcessFloorStop(elevator, floorNum);
 
         // Assert
-        result.Should().BeTrue();
         elevator.Direction.Should().Be(Direction.Up);
         elevator.CurrentPassengers.Should().NotBeEmpty();
         _manager.Floors[floorNum].UpQueue.Should().BeEmpty(); // Assuming the elevator can carry all passengers.
@@ -424,10 +420,9 @@ public class ElevatorManagerTests
         _manager.AddPassengerToFloor(floorNum, 9);
 
         // Act
-        var result = await _manager.ProcessFloorStop(elevator, floorNum);
+        _manager.ProcessFloorStop(elevator, floorNum);
 
         // Assert
-        result.Should().BeTrue();
         elevator.Direction.Should().Be(Direction.Down);
         elevator.CurrentPassengers.Should().NotBeEmpty();
         _manager.Floors[floorNum].DownQueue.Should().BeEmpty(); // Assuming the elevator can carry all passengers.
@@ -460,7 +455,7 @@ public class ElevatorManagerTests
         _manager.AddPassengerToFloor(floorNum, 1);
 
         // Act
-        var result = await _manager.ProcessFloorStop(elevator, floorNum);
+        _manager.ProcessFloorStop(elevator, floorNum);
 
         // Assert
         elevator.Direction.Should().Be(Direction.Up);

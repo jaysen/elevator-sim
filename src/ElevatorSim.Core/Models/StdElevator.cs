@@ -28,6 +28,7 @@ public class StdElevator : IElevator
     public List<IPassenger> CurrentPassengers { get; private set; }
     public SortedSet<int> FloorStops { get; private set; }
 
+    public event EventHandler<ElevatorStopEventArgs> StoppedAtFloor;
 
     /// <summary>
     /// Adds a FloorStop to the FloorStops collection.
@@ -47,6 +48,7 @@ public class StdElevator : IElevator
 
         FloorStops.Add(newFloor);
 
+
         // Change NextStop based on standard elevator logic:
         if (NextStop is null)
         {
@@ -54,12 +56,14 @@ public class StdElevator : IElevator
             return;
         }
         
-        if (Status == ElevatorStatus.Idle)
+        if (Direction == Direction.Idle)
         {
             // check if newFloor is closer than NextStop
             if (Math.Abs(CurrentFloor - newFloor) < Math.Abs(CurrentFloor - NextStop.Value))
             {
                 NextStop = newFloor;
+                Direction = CurrentFloor < newFloor ? Direction.Up : Direction.Down;
+                //Status = ElevatorStatus.Stopped;
             }
             return;
         }
@@ -120,6 +124,7 @@ public class StdElevator : IElevator
         }
 
         RemoveFloorStop(CurrentFloor); // remove the floor stop we just stopped at
+        SetBestNextStop(); // set the next stop based on standard elevator logic
         OnStoppedAtFloor(CurrentFloor);
     }
 
@@ -134,6 +139,9 @@ public class StdElevator : IElevator
             await Task.Delay(TimeBetweenFloors);
             CurrentFloor = Direction == Direction.Up ? CurrentFloor + 1 : CurrentFloor - 1;
         }
+        RemoveFloorStop(CurrentFloor);
+        //Direction = Direction.Idle;
+        //Status = ElevatorStatus.Idle;
     }
 
 
@@ -145,7 +153,6 @@ public class StdElevator : IElevator
         }
         CurrentPassengers.Add(passenger);
         AddFloorStop(passenger.DestinationFloor);
-        SetBestNextStop();
         return true;
     }
 
@@ -204,21 +211,21 @@ public class StdElevator : IElevator
         if (NextStop > CurrentFloor)
         {
             Direction = Direction.Up;
-            Status = ElevatorStatus.Stopped;
+            //Status = ElevatorStatus.Stopped;
         }
         else
         {
             Direction = Direction.Down;
-            Status = ElevatorStatus.Stopped;
+            //Status = ElevatorStatus.Stopped;
         }
 
     }
 
-    public event EventHandler<ElevatorStopEventArgs> StoppedAtFloor;
-
     protected virtual void OnStoppedAtFloor(int floorNumber)
     {
+        Status = ElevatorStatus.Stopped;
         StoppedAtFloor?.Invoke(this, new ElevatorStopEventArgs { FloorNumber = floorNumber, Direction = Direction});
+        
     }
 
     #region Private Methods
@@ -245,6 +252,15 @@ public class StdElevator : IElevator
             else if (upStops.Any())
             {
                 return upStops.Min();
+            }
+        }
+        else if (Direction == Direction.Idle)
+        {
+            if (upStops.Any())
+                return upStops.Min();
+            else if (downStops.Any())
+            {
+                return downStops.Max();
             }
         }
 

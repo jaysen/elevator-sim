@@ -28,7 +28,7 @@ public class BuildingSimTests
         building.DefaultElevatorCapacity.Should().Be(defaultCapacity);
         building.DefaultElevatorSpeed.Should().Be(defaultElevatorSpeed);
         building.Manager.Elevators.Count.Should().Be(elevatorCount);
-        building.Manager.Floors.Count.Should().Be(floorCount);
+        building.Manager.Floors.Count.Should().Be(floorCount+1); // +1 for ground floor
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class BuildingSimTests
         // add passenger should throw exception
         building.Invoking(b => b.AddPassengerToSim(originFloor, destinationFloor))
             .Should().Throw<ArgumentException>()
-            .WithMessage($"Destination floor must be between 0 and {floorCount - 1}");
+            .WithMessage($"Destination floor must be between 0 and {floorCount}");
     }
     [Fact]
     public void AddPassenger_WithOriginAboveTop_ShouldThrowException()
@@ -130,13 +130,13 @@ public class BuildingSimTests
         // Arrange
         var floorCount = 2;
         var building = new BuildingSim(floorCount, 1, 5, 1000);
-        int originFloor = 3;
+        int badOriginFloor = 3;
         int destinationFloor = 2;
 
         // add passenger should throw exception
-        building.Invoking(b => b.AddPassengerToSim(originFloor, destinationFloor))
+        building.Invoking(b => b.AddPassengerToSim(badOriginFloor, destinationFloor))
             .Should().Throw<ArgumentException>()
-            .WithMessage($"Origin floor must be between 0 and {floorCount - 1}");
+            .WithMessage($"Origin floor must be between 0 and {floorCount}");
     }
     [Fact]
     public void AddPassenger_WithNegativeOrigin_ShouldThrowException()
@@ -150,7 +150,7 @@ public class BuildingSimTests
         // add passenger should throw exception
         building.Invoking(b => b.AddPassengerToSim(originFloor, destinationFloor))
             .Should().Throw<ArgumentException>()
-            .WithMessage($"Origin floor must be between 0 and {floorCount - 1}");
+            .WithMessage($"Origin floor must be between 0 and {floorCount}");
     }
 
     #endregion AddPassenger tests

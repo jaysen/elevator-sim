@@ -40,10 +40,13 @@ public class SimDispatchingForPassengers
         var elevatorGoingToSecondFloor = Sim.Manager.Elevators.FirstOrDefault(e => e.FloorStops.Contains(originFloor2));
 
         elevatorGoingToFirstFloor.Should().NotBeNull("because one elevator should be going to the first floor");
-        elevatorGoingToSecondFloor.Should().NotBeNull("because another elevator should be going to the fourth floor");
+        elevatorGoingToSecondFloor.Should().NotBeNull("because one elevator should be going to the fourth floor");
+        elevatorGoingToFirstFloor.Should().NotBe(elevatorGoingToSecondFloor, "because the elevators should be different");
 
         elevatorGoingToFirstFloor.FloorStops.Should().Contain(originFloor1, "because the elevator should have the first floor in its stops");
         elevatorGoingToSecondFloor.FloorStops.Should().Contain(originFloor2, "because the elevator should have the fourth floor in its stops");
+
+
     }
 
     #endregion AddPassenger tests

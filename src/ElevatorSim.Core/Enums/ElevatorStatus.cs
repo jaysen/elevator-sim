@@ -3,6 +3,6 @@
 public enum ElevatorStatus
 {
     Idle,
-    Moving,
-    Stopped
+    Stopped,
+    Moving
 }

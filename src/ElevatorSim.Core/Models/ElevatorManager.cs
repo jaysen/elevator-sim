@@ -24,7 +24,7 @@ public class ElevatorManager : IElevatorManager
     public bool Setup(int floorCount, int elevatorCount, int defaultElevatorCapacity, int defaultElevatorSpeed)
     {
 
-        for (int i = 0; i < floorCount; i++)
+        for (int i = 0; i <= floorCount; i++)
         {
             Floors.Add(new Floor(i));
         }
@@ -70,13 +70,14 @@ public class ElevatorManager : IElevatorManager
         // Case 2: Elevators either idle, or moving towards the floor and heading in the right direction
         var movingTowardsFloorInRightDirection = Elevators
             .Where(e => (e.IsMovingTowardFloor(floorNum) && e.Direction == direction) || (e.Status == ElevatorStatus.Idle && e.FloorStops.Count == 0))
-            .OrderBy(e => Math.Abs(e.CurrentFloor - floorNum)) // Then closest ones
+            .OrderBy(e => Math.Abs(e.CurrentFloor - floorNum)) // first closest ones
+            .ThenBy(e => e.Direction == direction ? 0 : 1) // Prefer ones moving in the right direction
+            .ThenBy(e => e.Status == ElevatorStatus.Idle ? 0 : 1) // Prefer idle ones if all else is equal
             .FirstOrDefault();
         if (movingTowardsFloorInRightDirection != null)
         {
             return movingTowardsFloorInRightDirection;
         }
-
 
         // whats left are elevators moving toward the floor but going in the wrong direction, and those moving away.
         // Case 3: Elevators that have to turn around to get to the floor
@@ -152,7 +153,7 @@ public class ElevatorManager : IElevatorManager
             elevator.LoadPassenger(passengersQueue.Dequeue());
         }
 
-        // Move elevator to the next stop
+        // Prepare elevator to be moved to its NextStop
         elevator.SetBestNextStop();
         floor.RemoveElevatorFromStoppedElevators(elevator);
 

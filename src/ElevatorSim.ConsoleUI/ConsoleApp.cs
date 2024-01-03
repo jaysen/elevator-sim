@@ -92,11 +92,11 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
 
         sim.AddPassengerToSim(1, 6);
         sim.AddPassengerToSim(4, 2);
-        //sim.AddPassengerToSim(8, 22);
-        //sim.AddPassengerToSim(14, 22);
-        //sim.AddPassengerToSim(15, 7);
+        sim.AddPassengerToSim(8, 22);
+        sim.AddPassengerToSim(14, 22);
+        sim.AddPassengerToSim(15, 7);
         sim.AddPassengerToSim(19, 21);
-        //sim.AddPassengerToSim(26, 20);
+        sim.AddPassengerToSim(26, 20);
     }
 
 
