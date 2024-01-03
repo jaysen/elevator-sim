@@ -28,7 +28,7 @@ public class BuildingSimTests
         building.DefaultElevatorCapacity.Should().Be(defaultCapacity);
         building.DefaultElevatorSpeed.Should().Be(defaultElevatorSpeed);
         building.Manager.Elevators.Count.Should().Be(elevatorCount);
-        building.Manager.Floors.Count.Should().Be(floorCount);
+        building.Manager.Floors.Count.Should().Be(floorCount+1); // +1 for ground floor
     }
 
     [Fact]

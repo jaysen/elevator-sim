@@ -24,7 +24,7 @@ public class ElevatorManager : IElevatorManager
     public bool Setup(int floorCount, int elevatorCount, int defaultElevatorCapacity, int defaultElevatorSpeed)
     {
 
-        for (int i = 0; i < floorCount; i++)
+        for (int i = 0; i <= floorCount; i++)
         {
             Floors.Add(new Floor(i));
         }
@@ -152,7 +152,7 @@ public class ElevatorManager : IElevatorManager
             elevator.LoadPassenger(passengersQueue.Dequeue());
         }
 
-        // Move elevator to the next stop
+        // Prepare elevator to be moved to its NextStop
         elevator.SetBestNextStop();
         floor.RemoveElevatorFromStoppedElevators(elevator);
 

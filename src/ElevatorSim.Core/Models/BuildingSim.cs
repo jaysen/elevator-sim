@@ -9,7 +9,7 @@ public class BuildingSim : IBuildingSim
     public int DefaultElevatorCapacity { get; private set; }
     public int DefaultElevatorSpeed { get; private set; }
     public int ElevatorCount { get; private set; }
-    public int FloorCount { get; private set; }
+    public int FloorCount { get; private set; } // not including ground floor (0)
     public IElevatorManager Manager { get; private set; }
     public bool AnyElevatorsMoving
     {
