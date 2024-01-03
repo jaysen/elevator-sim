@@ -79,7 +79,6 @@ public class ElevatorManager : IElevatorManager
             return movingTowardsFloorInRightDirection;
         }
 
-
         // whats left are elevators moving toward the floor but going in the wrong direction, and those moving away.
         // Case 3: Elevators that have to turn around to get to the floor
 
