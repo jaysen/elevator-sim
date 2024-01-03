@@ -54,7 +54,7 @@ public class StdElevator : IElevator
             return;
         }
         
-        if (Status == ElevatorStatus.Idle)
+        if (Direction == Direction.Idle)
         {
             // check if newFloor is closer than NextStop
             if (Math.Abs(CurrentFloor - newFloor) < Math.Abs(CurrentFloor - NextStop.Value))

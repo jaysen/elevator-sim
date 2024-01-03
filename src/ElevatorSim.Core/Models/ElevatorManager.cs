@@ -70,7 +70,9 @@ public class ElevatorManager : IElevatorManager
         // Case 2: Elevators either idle, or moving towards the floor and heading in the right direction
         var movingTowardsFloorInRightDirection = Elevators
             .Where(e => (e.IsMovingTowardFloor(floorNum) && e.Direction == direction) || (e.Status == ElevatorStatus.Idle && e.FloorStops.Count == 0))
-            .OrderBy(e => Math.Abs(e.CurrentFloor - floorNum)) // Then closest ones
+            .OrderBy(e => Math.Abs(e.CurrentFloor - floorNum)) // first closest ones
+            .ThenBy(e => e.Direction == direction ? 0 : 1) // Prefer ones moving in the right direction
+            .ThenBy(e => e.Status == ElevatorStatus.Idle ? 0 : 1) // Prefer idle ones if all else is equal
             .FirstOrDefault();
         if (movingTowardsFloorInRightDirection != null)
         {
