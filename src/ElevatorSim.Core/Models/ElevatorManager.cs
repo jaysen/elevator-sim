@@ -166,7 +166,6 @@ public class ElevatorManager : IElevatorManager
 
     public async Task MoveAllElevators()
     {
-        //var tasks = Elevators.Select(e => e.MoveAsync());
         var tasks = Elevators.Where(e => e.Status == ElevatorStatus.Idle)
                      .Select(e => e.MoveAsync());
 

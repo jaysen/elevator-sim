@@ -13,13 +13,20 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
     private IBuildingSim? sim;
     private IElevatorManager? manager;
 
+    enum InputState { None, AwaitingFloor, AwaitingDestination }
+    private char CommandKey { get; set; }
+    private InputState CurrentInputState { get; set; } = InputState.None;
+    private int? InitialFloor { get; set; }
+    private int? DestinationFloor { get; set; }
+
+
     internal async Task RunAsync(string[] args)
     {
         _con.Write("ElevatorSim - Under Construction...", ConsoleColor.Magenta);
         _con.Write("");
 
-        //SetupSim(args); //TODO: disabling proper setup while using SetupSimForTesting()
-        SetupSimForTesting();
+        SetupSim(args); //TODO: disabling proper setup while using SetupSimForTesting()
+        //SetupSimForTesting();
 
         if (sim is null || manager is null)
         {
@@ -27,12 +34,68 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
             return;
         }
 
-        var displayTasks = DisplayElevatorStatusLoop(sim);
-        var moveTasks = sim.MoveElevators();
+        //var displayTasks = DisplayElevatorStatusLoop(sim);
+        var mainLoopTask = MainLoop(sim);
+        var InputTask = InputLoop();
+        //var moveTasks = sim.MoveElevators();
 
-        await Task.WhenAll(displayTasks, moveTasks);
+        await Task.WhenAny(mainLoopTask, InputTask);
 
         _con.Write("Simulation ending.", ConsoleColor.DarkCyan);
+    }
+
+    private async Task InputLoop()
+    {
+        while (CommandKey != 'q')
+        {
+            CommandKey = Console.ReadKey(true).KeyChar;  // Use true to not display the entered character.
+            if (CommandKey == 'a' && CurrentInputState == InputState.None)
+            {
+                CurrentInputState = InputState.AwaitingFloor;
+            }
+            // other input states are handled in the DisplayAndProcessActions() method
+        }
+    }
+
+
+    private async Task MainLoop(IBuildingSim sim)
+    {
+        while (CommandKey != 'q' )
+        {
+            await Task.Delay(50);
+            Console.Clear();
+            _con.DisplayElevatorsStatus(sim);
+            DisplayAndProcessActions();
+            sim.MoveElevators();
+        }
+    }
+
+    private void DisplayAndProcessActions()
+    {
+        _con.Write("Actions:", ConsoleColor.DarkCyan);
+        _con.Write("- Enter 'a' to add a passenger to the simulation", ConsoleColor.Cyan);
+        _con.Write("- Enter 'q' to exit the simulation", ConsoleColor.Cyan);
+        _con.Write(new string('-', 80), ConsoleColor.DarkCyan);
+
+        if (CurrentInputState == InputState.AwaitingFloor)
+        {
+            InitialFloor = _con.PromptForInt("Enter the floor number:", ConsoleColor.Green);
+            if (InitialFloor.HasValue)
+            {
+                CurrentInputState = InputState.AwaitingDestination;
+            }
+        }
+        else if (CurrentInputState == InputState.AwaitingDestination)
+        {
+            DestinationFloor = _con.PromptForInt("Enter the destination floor number:", ConsoleColor.Green);
+            if (DestinationFloor.HasValue)
+            {
+                sim?.AddPassengerToSim(InitialFloor.Value, DestinationFloor.Value);
+                InitialFloor = null;
+                DestinationFloor = null;
+                CurrentInputState = InputState.None; // Reset input state
+            }
+        }
     }
 
     private async Task DisplayElevatorStatusLoop(IBuildingSim sim)
@@ -40,7 +103,7 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
         var moving = true;
         while (moving)
         {
-            await Task.Delay(10);
+            await Task.Delay(100);
             Console.Clear();
             _con.DisplayElevatorsStatus(sim);
             moving = sim.AnyElevatorsMoving;
