@@ -90,8 +90,6 @@ public class ConsoleHelper
         return string.Join(", ", floorStops);
     }
 
-
-
     /// <summary>
     /// Displays the status of each elevator in the console.
     /// </summary>
@@ -108,6 +106,16 @@ public class ConsoleHelper
 
             Write($"[{elevator.Name}] Floor {elevator.CurrentFloor} {elevatorDirection}  |  Passengers: {passengerCount}  |  Destinations: {destinations}", ConsoleColor.Yellow);
         }
+        Write(" ");
+        Write(new string('-', 80), ConsoleColor.DarkCyan);
+    }
+
+    public void DisplayActions()
+    {
+        Write("Actions:", ConsoleColor.DarkCyan);
+        Write(" ");
+        Write("- Enter 'a' to add a passenger to the simulation", ConsoleColor.Cyan);
+        Write("- Enter 'q' to exit the simulation", ConsoleColor.Cyan);
         Write(" ");
         Write(new string('-', 80), ConsoleColor.DarkCyan);
     }

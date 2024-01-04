@@ -71,12 +71,7 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
 
     private void DisplayAndProcessActions()
     {
-        _con.Write("Actions:", ConsoleColor.DarkCyan);
-        _con.Write(" ");
-        _con.Write("- Enter 'a' to add a passenger to the simulation", ConsoleColor.Cyan);
-        _con.Write("- Enter 'q' to exit the simulation", ConsoleColor.Cyan);
-        _con.Write(" ");
-        _con.Write(new string('-', 80), ConsoleColor.DarkCyan);
+        _con.DisplayActions();
 
         if (CurrentInputState == InputState.AwaitingFloor)
         {
