@@ -121,8 +121,9 @@ public class ConsoleHelper
         ConsoleColor actionColor = ConsoleColor.Cyan;
         Write("Actions:", ConsoleColor.DarkCyan);
         Write(" ");
-        Write("- Enter 'a' to add a passenger to the simulation", actionColor);
-        Write("- Enter 'q' to exit the simulation", actionColor);
+        Write("- Press 'a' to add a passenger to the simulation", actionColor);
+        Write("- Press 'm' to add multiple passengers to the simulation", actionColor);
+        Write("- Press 'q' to exit the simulation", actionColor);
         Write(" ");
         Write(new string('-', 80), ConsoleColor.DarkCyan);
     }
