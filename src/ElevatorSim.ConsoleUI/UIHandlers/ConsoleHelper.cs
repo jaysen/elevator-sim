@@ -48,6 +48,7 @@ public class ConsoleHelper
         return value;
     }
 
+
     /// <summary>
     /// Writes the simulation setup to the console
     /// </summary>
@@ -57,6 +58,12 @@ public class ConsoleHelper
         Write($"Floor Count = {sim.FloorCount}", color);
         Write($"Default Elevator Capacity = {sim.DefaultElevatorCapacity}", color);
         Write($"Default Elevator Speed = {sim.DefaultElevatorSpeed}", color);
+    }
+
+    public void DisplaySimHeader(IBuildingSim sim)
+    {
+        Write(new string('-', 80), ConsoleColor.DarkCyan);
+        Write($"Elevator Simulation - {sim.FloorCount} Floors", ConsoleColor.DarkMagenta);
     }
 
     public string GetDirectionSymbol(Direction direction)
@@ -92,16 +99,16 @@ public class ConsoleHelper
     {
         Write(new string('-', 80), ConsoleColor.DarkCyan);
         Write("Elevator Status:", ConsoleColor.DarkCyan);
-
+        Write(" ");
         foreach (var elevator in sim.Manager.Elevators)
         {
             string elevatorDirection = GetDirectionSymbol(elevator.Direction);
             string passengerCount = elevator.CurrentPassengers.Count.ToString();
             string destinations = FormatDestinations(elevator.FloorStops);
 
-            Write($"[{elevator.Name}] Floor {elevator.CurrentFloor} {elevatorDirection}  |  Passengers: {passengerCount}  |  Destinations: {destinations}", ConsoleColor.Gray);
+            Write($"[{elevator.Name}] Floor {elevator.CurrentFloor} {elevatorDirection}  |  Passengers: {passengerCount}  |  Destinations: {destinations}", ConsoleColor.Yellow);
         }
-
+        Write(" ");
         Write(new string('-', 80), ConsoleColor.DarkCyan);
     }
 }

@@ -22,11 +22,11 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
 
     internal async Task RunAsync(string[] args)
     {
-        _con.Write("ElevatorSim - Under Construction...", ConsoleColor.Magenta);
+        _con.Write("ElevatorSim - v1.0", ConsoleColor.Magenta);
         _con.Write("");
 
-        SetupSim(args); //TODO: disabling proper setup while using SetupSimForTesting()
-        //SetupSimForTesting();
+        SetupSim(args);
+        //SetupSimForTesting(); // if you want initial passengers and elevator set for testing
 
         if (sim is null || manager is null)
         {
@@ -34,10 +34,8 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
             return;
         }
 
-        //var displayTasks = DisplayElevatorStatusLoop(sim);
-        var mainLoopTask = MainLoop(sim);
+        var mainLoopTask = MainLoop();
         var InputTask = InputLoop();
-        //var moveTasks = sim.MoveElevators();
 
         await Task.WhenAny(mainLoopTask, InputTask);
 
@@ -58,12 +56,13 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
     }
 
 
-    private async Task MainLoop(IBuildingSim sim)
+    private async Task MainLoop()
     {
         while (CommandKey != 'q' )
         {
             await Task.Delay(50);
             Console.Clear();
+            _con.DisplaySimHeader(sim);
             _con.DisplayElevatorsStatus(sim);
             DisplayAndProcessActions();
             sim.MoveElevators();
@@ -73,13 +72,15 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
     private void DisplayAndProcessActions()
     {
         _con.Write("Actions:", ConsoleColor.DarkCyan);
+        _con.Write(" ");
         _con.Write("- Enter 'a' to add a passenger to the simulation", ConsoleColor.Cyan);
         _con.Write("- Enter 'q' to exit the simulation", ConsoleColor.Cyan);
+        _con.Write(" ");
         _con.Write(new string('-', 80), ConsoleColor.DarkCyan);
 
         if (CurrentInputState == InputState.AwaitingFloor)
         {
-            InitialFloor = _con.PromptForInt("Enter the floor number:", ConsoleColor.Green);
+            InitialFloor = _con.PromptForInt("Enter the passenger's origin floor number :", ConsoleColor.Green);
             if (InitialFloor.HasValue)
             {
                 CurrentInputState = InputState.AwaitingDestination;
@@ -96,6 +97,7 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
                 CurrentInputState = InputState.None; // Reset input state
             }
         }
+        _con.Write(" ");
     }
 
     private async Task DisplayElevatorStatusLoop(IBuildingSim sim)
