@@ -43,7 +43,7 @@ public class BuildingSim : IBuildingSim
         ElevatorCount++;
     }
 
-    public bool AddPassengerToSim(int originFloor, int destinationFloor)
+    public void AddPassengersToSim(int originFloor, int destinationFloor, int passengerCount = 1)
     {
         if (originFloor < 0 || originFloor > FloorCount)
         {
@@ -53,7 +53,7 @@ public class BuildingSim : IBuildingSim
         {
             throw new ArgumentException($"Destination floor must be between 0 and {FloorCount}");
         }
-        return Manager.AddPassengerToFloor(originFloor, destinationFloor);
+        Manager.AddPassengersToFloor(originFloor, destinationFloor, passengerCount);
     }
 
     public void ResetSim()

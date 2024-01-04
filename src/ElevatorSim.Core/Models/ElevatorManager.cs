@@ -110,10 +110,14 @@ public class ElevatorManager : IElevatorManager
         return elevator.CurrentFloor == floorNum;
     }
 
-    public bool AddPassengerToFloor(int floorNum, int destinationFloor)
+    public void AddPassengersToFloor(int floorNum, int destinationFloor, int passengerCount = 1)
     {
         var floor = Floors[floorNum];
-        var passenger = new Passenger(destinationFloor);
+        for (int i = 0; i < passengerCount; i++)
+        {
+            var passenger = new Passenger(destinationFloor);
+            floor.AddPassenger(passenger);
+        }
         var direction = floorNum < destinationFloor ? Direction.Up : Direction.Down;
         if (direction == Direction.Up)
         {
@@ -125,7 +129,7 @@ public class ElevatorManager : IElevatorManager
             DispatchElevatorToFloorAsync(floorNum, Direction.Down);
             FloorsRequestingDown.Add(floorNum);
         }
-        return floor.AddPassenger(passenger); 
+        
     }
 
     public void ProcessFloorStop(IElevator elevator, int floorNum)

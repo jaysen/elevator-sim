@@ -33,7 +33,7 @@ public interface IElevatorManager
 
     bool AddElevator(IElevator elevator);
 
-    bool AddPassengerToFloor(int floorNum, int destinationFloor);
+    void AddPassengersToFloor(int floorNum, int destinationFloor, int passengerCount = 1);
 
     void DispatchElevatorToFloorAsync(int floor, Direction direction);
 
