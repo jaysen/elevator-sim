@@ -20,8 +20,7 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
     private int? InitialFloor { get; set; }
     private int? DestinationFloor { get; set; }
 
-    private string InitialFloorError { get; set; } 
-    private string DestinationFloorError { get; set; }
+    private string FloorError { get; set; } 
 
     internal async Task RunAsync(string[] args)
     {
@@ -78,27 +77,27 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
 
         if (CurrentInputState == InputState.AwaitingFloor)
         {
-            if (InitialFloorError != "")
+            if (FloorError != "")
             {
-                _con.Write(InitialFloorError, ConsoleColor.Red);
+                _con.Write(FloorError, ConsoleColor.Red);
             }
             int? floor = _con.PromptForInt("Enter the passenger's origin floor number:", ConsoleColor.Green);
             if (floor.HasValue && IsValidFloor(floor.Value))
             {
                 InitialFloor = floor;
                 CurrentInputState = InputState.AwaitingDestination;
-                InitialFloorError = "";
+                FloorError = "";
             }
             else
             {
-                InitialFloorError = $"Invalid floor number. Please enter a number between 0 and {sim.FloorCount}.";
+                FloorError = $"Invalid floor number. Please enter a number between 0 and {sim.FloorCount}!";
             }
         }
         else if (CurrentInputState == InputState.AwaitingDestination)
         {
-            if (DestinationFloorError != "")
+            if (FloorError != "")
             {
-                _con.Write(DestinationFloorError, ConsoleColor.Red);
+                _con.Write(FloorError, ConsoleColor.Red);
             }
             int? destination = _con.PromptForInt("Enter the destination floor number:", ConsoleColor.Green);
             if (destination.HasValue && IsValidFloor(destination.Value) && destination != InitialFloor)
@@ -107,18 +106,18 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
                 sim?.AddPassengerToSim(InitialFloor.Value, DestinationFloor.Value);
 
                 // Reset for the next input
-                DestinationFloorError = "";
+                FloorError = "";
                 InitialFloor = null;
                 DestinationFloor = null;
                 CurrentInputState = InputState.None;
             }
             else if (destination == InitialFloor)
             {
-                DestinationFloorError = "Destination floor cannot be the same as the initial floor. Please enter a different floor:";
+                FloorError = "Destination floor cannot be the same as the initial floor. Please enter a different floor!";
             }
             else
             {
-                DestinationFloorError = $"Invalid floor number. Please enter a number between 1 and {sim.FloorCount}.";
+                FloorError = $"Invalid floor number. Please enter a number between 1 and {sim.FloorCount}!";
             }
         }
         _con.Write(" ");
