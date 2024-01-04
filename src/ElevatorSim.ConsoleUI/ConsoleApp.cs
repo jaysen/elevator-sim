@@ -132,6 +132,7 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
                 InitialFloor = null;
                 DestinationFloor = null;
                 CurrentInputState = InputState.None;
+                numPassengers = 1;
             }
             else if (destination == InitialFloor)
             {
