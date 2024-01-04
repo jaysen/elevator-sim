@@ -57,8 +57,14 @@ public class ElevatorManager : IElevatorManager
 
     public IElevator? GetBestElevatorToDispatch(int floorNum, Direction direction)
     {
+        // get elevators that are not full:
+        var AvailableElevators = Elevators
+            .Where(e => e.CurrentPassengers.Count < e.CapacityLimit)
+            .ToList();
+
+
         // Case 1: Elevators stopped or idle on floorNum
-        var stoppedOrIdleOnFloor = Elevators
+        var stoppedOrIdleOnFloor = AvailableElevators
             .Where(e => e.CurrentFloor == floorNum && (e.Status == ElevatorStatus.Idle || e.Status == ElevatorStatus.Stopped))
             .FirstOrDefault();
 
@@ -68,7 +74,7 @@ public class ElevatorManager : IElevatorManager
         }
 
         // Case 2: Elevators either idle, or moving towards the floor and heading in the right direction
-        var movingTowardsFloorInRightDirection = Elevators
+        var movingTowardsFloorInRightDirection = AvailableElevators
             .Where(e => (e.IsMovingTowardFloor(floorNum) && e.Direction == direction) || (e.Status == ElevatorStatus.Idle && e.FloorStops.Count == 0))
             .OrderBy(e => Math.Abs(e.CurrentFloor - floorNum)) // first closest ones
             .ThenBy(e => e.Direction == direction ? 0 : 1) // Prefer ones moving in the right direction
@@ -89,7 +95,7 @@ public class ElevatorManager : IElevatorManager
 
         //TODO: This case doesn't yet handle the case where the elevator is already needing to turn around and go past the requested floor counter to requested direction.
 
-        var elevatorsTurningAround = Elevators
+        var elevatorsTurningAround = AvailableElevators
             .Select(e => new
             {
                 Elevator = e,
@@ -99,8 +105,23 @@ public class ElevatorManager : IElevatorManager
             })
             .OrderBy(e => e.Distance)
             .ToList();
+        if (elevatorsTurningAround.Count != 0)
+        {
+            return elevatorsTurningAround.FirstOrDefault()?.Elevator;
+        }
 
-        return elevatorsTurningAround.FirstOrDefault()?.Elevator;
+        // TODO: Refine below:
+
+        // catch all: return first available elevator
+        if (AvailableElevators.Count != 0)
+        {
+            return AvailableElevators.FirstOrDefault();
+        }
+
+        // catch all: return first elevator
+        return Elevators.FirstOrDefault(); // this 
+
+        
 
     }
 
