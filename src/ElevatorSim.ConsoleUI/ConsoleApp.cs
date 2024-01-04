@@ -17,6 +17,7 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
     enum InputState { None, AwaitingNumberOfPassengers, AwaitingFloor, AwaitingDestination}
     private char CommandKey { get; set; }
     private InputState CurrentInputState { get; set; } = InputState.None;
+    private int numPassengers { get; set; } = 1;
     private int? InitialFloor { get; set; }
     private int? DestinationFloor { get; set; }
 
@@ -79,7 +80,6 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
     {
         _con.DisplayActions();
 
-        int numPassengers = 1;
         if (CurrentInputState == InputState.AwaitingNumberOfPassengers)
         {
             if (InputError != "")
