@@ -17,11 +17,11 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
     enum InputState { None, AwaitingNumberOfPassengers, AwaitingFloor, AwaitingDestination}
     private char CommandKey { get; set; }
     private InputState CurrentInputState { get; set; } = InputState.None;
-    private int numPassengers { get; set; } = 1;
+    private int NumPassengers { get; set; } = 1;
     private int? InitialFloor { get; set; }
     private int? DestinationFloor { get; set; }
+    private string InputError { get; set; }
 
-    private string InputError { get; set; } 
 
     internal async Task RunAsync(string[] args)
     {
@@ -85,8 +85,8 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
             {
                 _con.Write(InputError, ConsoleColor.Red);
             }
-            numPassengers = _con.PromptForInt("Enter the number of passengers to add:", ConsoleColor.Green);
-            if (numPassengers > 0)
+            NumPassengers = _con.PromptForInt("Enter the number of passengers to add:", ConsoleColor.Green);
+            if (NumPassengers > 0)
             {
                 CurrentInputState = InputState.AwaitingFloor;
                 InputError = "";
@@ -131,7 +131,7 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
                 InitialFloor = null;
                 DestinationFloor = null;
                 CurrentInputState = InputState.None;
-                numPassengers = 1;
+                NumPassengers = 1;
             }
             else if (destination == InitialFloor)
             {
