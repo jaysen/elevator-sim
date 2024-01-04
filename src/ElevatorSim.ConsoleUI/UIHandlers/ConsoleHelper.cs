@@ -101,10 +101,16 @@ public class ConsoleHelper
         foreach (var elevator in sim.Manager.Elevators)
         {
             string elevatorDirection = GetDirectionSymbol(elevator.Direction);
-            string passengerCount = elevator.CurrentPassengers.Count.ToString();
+            string currentFloor = elevator.CurrentFloor.ToString().PadRight(2, ' '); // Pad with space if single digit
+            string passengerCount = elevator.CurrentPassengers.Count.ToString().PadLeft(2, ' '); // Pad with space if single digit
             string destinations = FormatDestinations(elevator.FloorStops);
 
-            Write($"[{elevator.Name}] Floor {elevator.CurrentFloor} {elevatorDirection}  |  Passengers: {passengerCount}  |  Destinations: {destinations}", ConsoleColor.Yellow);
+            Write($"[{elevator.Name}]:", ConsoleColor.DarkYellow, false);
+            Write($" Floor {currentFloor} {elevatorDirection}", ConsoleColor.Yellow, false);
+            Write($" |  Passengers:", ConsoleColor.DarkYellow, false);
+            Write($" {passengerCount}", ConsoleColor.Yellow, false);
+            Write($" |  Destinations:", ConsoleColor.DarkYellow, false);
+            Write($" {destinations}", ConsoleColor.Yellow);
         }
         Write(" ");
         Write(new string('-', 80), ConsoleColor.DarkCyan);
@@ -112,10 +118,11 @@ public class ConsoleHelper
 
     public void DisplayActions()
     {
+        ConsoleColor actionColor = ConsoleColor.Cyan;
         Write("Actions:", ConsoleColor.DarkCyan);
         Write(" ");
-        Write("- Enter 'a' to add a passenger to the simulation", ConsoleColor.Cyan);
-        Write("- Enter 'q' to exit the simulation", ConsoleColor.Cyan);
+        Write("- Enter 'a' to add a passenger to the simulation", actionColor);
+        Write("- Enter 'q' to exit the simulation", actionColor);
         Write(" ");
         Write(new string('-', 80), ConsoleColor.DarkCyan);
     }
