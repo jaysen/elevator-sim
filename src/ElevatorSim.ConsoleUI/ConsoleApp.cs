@@ -58,7 +58,7 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
             {
                 CurrentInputState = InputState.AwaitingNumberOfPassengers;
             }
-            // other input states are handled in the DisplayAndProcessActions() method
+            // other input states are handled in the ProcessActionInputs() method
         }
     }
 
@@ -67,19 +67,18 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
     {
         while (CommandKey != 'q' )
         {
-            await Task.Delay(50);
+            await Task.Delay(20);
             Console.Clear();
             _con.DisplaySimHeader(sim);
             _con.DisplayElevatorsStatus(sim);
-            DisplayAndProcessActions();
+            _con.DisplayActions();
+            ProcessActionInputs();
             sim.MoveElevators();
         }
     }
 
-    private void DisplayAndProcessActions()
+    private void ProcessActionInputs()
     {
-        _con.DisplayActions();
-
         if (CurrentInputState == InputState.AwaitingNumberOfPassengers)
         {
             if (InputError != "")
