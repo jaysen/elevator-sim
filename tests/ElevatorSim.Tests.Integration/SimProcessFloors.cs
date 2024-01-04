@@ -24,7 +24,7 @@ public class SimProcessingFloorStops
         // Arrange
         SetupSim(25, 2, 5, 1000);
         Sim.SetElevatorFloor(1, 20); // Elevator 1 starts at floor 20
-        Sim.AddPassengerToSim(19, 21);
+        Sim.AddPassengersToSim(19, 21);
 
         // Act
         await Sim.MoveElevators();

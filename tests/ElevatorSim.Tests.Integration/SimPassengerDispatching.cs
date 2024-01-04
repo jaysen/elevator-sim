@@ -30,8 +30,8 @@ public class SimDispatchingForPassengers
         int destinationFloor2 = 2;
 
         // Act
-        Sim.AddPassengerToSim(originFloor1, destinationFloor1);
-        Sim.AddPassengerToSim(originFloor2, destinationFloor2);
+        Sim.AddPassengersToSim(originFloor1, destinationFloor1);
+        Sim.AddPassengersToSim(originFloor2, destinationFloor2);
 
         // Assert
         Sim.Manager.Elevators.Count.Should().Be(2, "because there are two elevators in the simulation");

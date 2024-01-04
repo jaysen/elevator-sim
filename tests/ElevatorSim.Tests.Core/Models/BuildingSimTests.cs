@@ -83,10 +83,9 @@ public class BuildingSimTests
         int destinationFloor = 3;
 
         // Act
-        var retval = building.AddPassengerToSim(originFloor, destinationFloor);
+        building.AddPassengersToSim(originFloor, destinationFloor);
 
         // Assert
-        retval.Should().BeTrue();
         building.Manager.Floors[originFloor].DownQueue
             .Should().ContainSingle().Which
             .Should().BeOfType<Passenger>()
@@ -101,7 +100,7 @@ public class BuildingSimTests
         int destinationFloor = 5;
 
         // Act
-        building.AddPassengerToSim(originFloor, destinationFloor);
+        building.AddPassengersToSim(originFloor, destinationFloor);
 
         // Assert
         building.Manager.Floors[originFloor].DownQueue
@@ -120,7 +119,7 @@ public class BuildingSimTests
         int destinationFloor = 3;
 
         // add passenger should throw exception
-        building.Invoking(b => b.AddPassengerToSim(originFloor, destinationFloor))
+        building.Invoking(b => b.AddPassengersToSim(originFloor, destinationFloor))
             .Should().Throw<ArgumentException>()
             .WithMessage($"Destination floor must be between 0 and {floorCount}");
     }
@@ -134,7 +133,7 @@ public class BuildingSimTests
         int destinationFloor = 2;
 
         // add passenger should throw exception
-        building.Invoking(b => b.AddPassengerToSim(badOriginFloor, destinationFloor))
+        building.Invoking(b => b.AddPassengersToSim(badOriginFloor, destinationFloor))
             .Should().Throw<ArgumentException>()
             .WithMessage($"Origin floor must be between 0 and {floorCount}");
     }
@@ -148,7 +147,7 @@ public class BuildingSimTests
         int destinationFloor = 2;
 
         // add passenger should throw exception
-        building.Invoking(b => b.AddPassengerToSim(originFloor, destinationFloor))
+        building.Invoking(b => b.AddPassengersToSim(originFloor, destinationFloor))
             .Should().Throw<ArgumentException>()
             .WithMessage($"Origin floor must be between 0 and {floorCount}");
     }
