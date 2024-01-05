@@ -150,18 +150,6 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
         return value is int floor && floor >= 0 && floor <= sim.FloorCount;
     }
 
-    private async Task DisplayElevatorStatusLoop(IBuildingSim sim)
-    {
-        var moving = true;
-        while (moving)
-        {
-            await Task.Delay(100);
-            Console.Clear();
-            _con.DisplayElevatorsStatus(sim);
-            moving = sim.AnyElevatorsMoving;
-        }
-    }
-
     /// <summary>
     /// Sets up the simulation based on command-line arguments or user input
     /// </summary>
