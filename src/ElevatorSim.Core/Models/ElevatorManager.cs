@@ -1,11 +1,14 @@
 using ElevatorSim.Core.Models.Interfaces;
 using ElevatorSim.Core.Enums;
+using ElevatorSim.Core.Services.Interfaces;
+using ElevatorSim.Core.Services;
 
 namespace ElevatorSim.Core.Models;
 
 // Implement the IElevatorManager interface
 public class ElevatorManager : IElevatorManager
 {
+    public IRollingLog RollingLog { get; set; }
 
     public List<IElevator> Elevators { get; }
     public List<IFloor> Floors { get; }
@@ -19,6 +22,7 @@ public class ElevatorManager : IElevatorManager
         Floors = [];
         FloorsRequestingUp = [];
         FloorsRequestingDown = [];
+        RollingLog = new RollingLog(10);
     }
 
     public bool Setup(int floorCount, int elevatorCount, int defaultElevatorCapacity, int defaultElevatorSpeed)

@@ -3,7 +3,6 @@ using ElevatorSim.Core.Enums;
 
 namespace ElevatorSim.Core.Models;
 
-// Implement the IBuildingSim interface here
 public class BuildingSim : IBuildingSim
 {
     public int DefaultElevatorCapacity { get; private set; }

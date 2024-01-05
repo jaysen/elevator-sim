@@ -1,4 +1,5 @@
 ﻿using ElevatorSim.Core.Enums;
+using ElevatorSim.Core.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -44,5 +45,7 @@ public interface IElevatorManager
     void ProcessFloorStop(IElevator elevator, int floorNum);
 
     bool Reset();
+
+    IRollingLog RollingLog { get; set; }
 
 }
