@@ -207,8 +207,8 @@ public class ElevatorManager : IElevatorManager
         // Request lift if there are still passengers waiting
         if (passengersQueue.Count > 0)
         {
-            DispatchElevatorToFloorAsync(floorNum, direction);
             RollingLog.Add($"{elevator.Name} couldn't take everyone. {passengersQueue.Count} still left on floor {floorNum} going {direction}");
+            DispatchElevatorToFloorAsync(floorNum, direction);
         }
     }
 
