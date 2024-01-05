@@ -63,8 +63,7 @@ public class ConsoleHelper
 
     public void DisplaySimHeader(IBuildingSim sim)
     {
-        Write(new string('-', 80), ConsoleColor.DarkCyan);
-        Write($"Elevator Simulation - {sim.FloorCount} Floors", ConsoleColor.DarkMagenta);
+        Write($"Elevator Simulation - {sim.FloorCount} Floors", ConsoleColor.Magenta);
     }
 
     public string GetDirectionSymbol(Direction direction)
@@ -97,8 +96,7 @@ public class ConsoleHelper
     public void DisplayElevatorsStatus(IBuildingSim sim)
     {
         Write(new string('-', 80), ConsoleColor.DarkCyan);
-        Write("Elevator Status:", ConsoleColor.DarkCyan);
-        Write(" ");
+        Write("Elevators Status:", ConsoleColor.DarkCyan);
         foreach (var elevator in sim.Manager.Elevators)
         {
             string elevatorDirection = GetDirectionSymbol(elevator.Direction);
@@ -113,7 +111,6 @@ public class ConsoleHelper
             Write($" |  Destinations:", ConsoleColor.DarkYellow, false);
             Write($" {destinations}", ConsoleColor.Yellow);
         }
-        Write(" ");
         Write(new string('-', 80), ConsoleColor.DarkCyan);
     }
 
@@ -121,30 +118,25 @@ public class ConsoleHelper
     {
         ConsoleColor actionColor = ConsoleColor.Cyan;
         Write("Actions:", ConsoleColor.DarkCyan);
-        Write(" ");
         Write("- Press 'a' to add a passenger to the simulation", actionColor);
         Write("- Press 'm' to add multiple passengers to the simulation", actionColor);
         Write("- Press 'q' to exit the simulation", actionColor);
-        Write(" ");
         //Write(new string('-', 80), ConsoleColor.DarkCyan);
     }
 
     public void DisplayLog(IRollingLog rollingLog, int numberEntries)
     {
         var logColor = ConsoleColor.DarkYellow;
-        Write("");
         Write(new string('-', 80), ConsoleColor.DarkCyan);
         Write($"Log:", ConsoleColor.DarkCyan);
-        var entries = rollingLog.GetEntries();
+        var entries = rollingLog.GetLastEntries(numberEntries);
         // append entries to a string
         var logEntries = new StringBuilder();
         foreach (var entry in entries)
         {
-            logEntries.AppendLine(entry);
+            logEntries.AppendLine($"> {entry}");
         }
         Write(logEntries.ToString(), logColor);
-        Write("");
         Write(new string('-', 80), ConsoleColor.DarkCyan);
-        Write("");
     }
 }

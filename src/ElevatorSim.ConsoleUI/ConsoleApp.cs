@@ -66,7 +66,7 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
     {
         while (CommandKey != 'q' )
         {
-            await Task.Delay(20);
+            await Task.Delay(200);
             Console.Clear();
             _con.DisplaySimHeader(sim);
             _con.DisplayElevatorsStatus(sim);
