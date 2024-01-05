@@ -16,7 +16,7 @@ public interface IBuildingSim
 
     void AddElevatorToSim(IElevator elevator);   
     void SetElevatorFloor(int elevatorNum, int floorNum);
-    bool AddPassengerToSim(int originFloor, int destinationFloor);
+    void AddPassengersToSim(int originFloor, int destinationFloor, int passengerCount = 1);
     void ResetSim();
 
     bool AnyElevatorsMoving { get; }

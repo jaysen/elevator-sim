@@ -2,7 +2,7 @@
   "profiles": {
     "ConsoleUI args": {
       "commandName": "Project",
-      "commandLineArgs": "20 2 10 10"
+      "commandLineArgs": "40 4 10 1000"
     },
     "ConsoleUI": {
       "commandName": "Project"

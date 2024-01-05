@@ -98,10 +98,9 @@ public class ElevatorManagerTests
         var floor = _manager.Floors[0];
 
         // Act
-        bool result = _manager.AddPassengerToFloor(0, 5);
+        _manager.AddPassengersToFloor(0, 5);
 
         // Assert
-        result.Should().BeTrue();
         floor.UpQueue.Should().HaveCount(1);
         floor.UpQueue.First().DestinationFloor.Should().Be(5);
     }
@@ -379,11 +378,11 @@ public class ElevatorManagerTests
         var elevator = _manager.Elevators[0];
         elevator.SetFloor(floorNum);
         
-        _manager.AddPassengerToFloor(floorNum, 6);
-        _manager.AddPassengerToFloor(floorNum, 8);
-        _manager.AddPassengerToFloor(floorNum, 8);
-        _manager.AddPassengerToFloor(floorNum, 2);
-        _manager.AddPassengerToFloor(floorNum, 1);
+        _manager.AddPassengersToFloor(floorNum, 6);
+        _manager.AddPassengersToFloor(floorNum, 8);
+        _manager.AddPassengersToFloor(floorNum, 8);
+        _manager.AddPassengersToFloor(floorNum, 2);
+        _manager.AddPassengersToFloor(floorNum, 1);
 
         // Act
         _manager.ProcessFloorStop(elevator, floorNum);
@@ -413,11 +412,11 @@ public class ElevatorManagerTests
         elevator.AddFloorStop(floorNum);
         await elevator.MoveToNextStopAsync();
 
-        _manager.AddPassengerToFloor(floorNum, 4);
-        _manager.AddPassengerToFloor(floorNum, 2);
-        _manager.AddPassengerToFloor(floorNum, 1);
-        _manager.AddPassengerToFloor(floorNum, 8);
-        _manager.AddPassengerToFloor(floorNum, 9);
+        _manager.AddPassengersToFloor(floorNum, 4);
+        _manager.AddPassengersToFloor(floorNum, 2);
+        _manager.AddPassengersToFloor(floorNum, 1);
+        _manager.AddPassengersToFloor(floorNum, 8);
+        _manager.AddPassengersToFloor(floorNum, 9);
 
         // Act
         _manager.ProcessFloorStop(elevator, floorNum);
@@ -448,11 +447,11 @@ public class ElevatorManagerTests
         elevator.AddFloorStop(30);
         await elevator.MoveToNextStopAsync();
 
-        _manager.AddPassengerToFloor(floorNum, 16);
-        _manager.AddPassengerToFloor(floorNum, 18);
-        _manager.AddPassengerToFloor(floorNum, 3);
-        _manager.AddPassengerToFloor(floorNum, 2);
-        _manager.AddPassengerToFloor(floorNum, 1);
+        _manager.AddPassengersToFloor(floorNum, 16);
+        _manager.AddPassengersToFloor(floorNum, 18);
+        _manager.AddPassengersToFloor(floorNum, 3);
+        _manager.AddPassengersToFloor(floorNum, 2);
+        _manager.AddPassengersToFloor(floorNum, 1);
 
         // Act
         _manager.ProcessFloorStop(elevator, floorNum);

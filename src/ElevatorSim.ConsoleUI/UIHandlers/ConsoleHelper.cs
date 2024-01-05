@@ -1,5 +1,6 @@
 ﻿using ElevatorSim.Core.Enums;
 using ElevatorSim.Core.Models.Interfaces;
+using ElevatorSim.Core.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,6 +49,7 @@ public class ConsoleHelper
         return value;
     }
 
+
     /// <summary>
     /// Writes the simulation setup to the console
     /// </summary>
@@ -57,6 +59,11 @@ public class ConsoleHelper
         Write($"Floor Count = {sim.FloorCount}", color);
         Write($"Default Elevator Capacity = {sim.DefaultElevatorCapacity}", color);
         Write($"Default Elevator Speed = {sim.DefaultElevatorSpeed}", color);
+    }
+
+    public void DisplaySimHeader(IBuildingSim sim)
+    {
+        Write($"Elevator Simulation - {sim.FloorCount} Floors", ConsoleColor.Magenta);
     }
 
     public string GetDirectionSymbol(Direction direction)
@@ -83,25 +90,53 @@ public class ConsoleHelper
         return string.Join(", ", floorStops);
     }
 
-
-
     /// <summary>
     /// Displays the status of each elevator in the console.
     /// </summary>
     public void DisplayElevatorsStatus(IBuildingSim sim)
     {
         Write(new string('-', 80), ConsoleColor.DarkCyan);
-        Write("Elevator Status:", ConsoleColor.DarkCyan);
-
+        Write("Elevators Status:", ConsoleColor.DarkCyan);
         foreach (var elevator in sim.Manager.Elevators)
         {
             string elevatorDirection = GetDirectionSymbol(elevator.Direction);
-            string passengerCount = elevator.CurrentPassengers.Count.ToString();
+            string currentFloor = elevator.CurrentFloor.ToString().PadRight(2, ' '); // Pad with space if single digit
+            string passengerCount = elevator.CurrentPassengers.Count.ToString().PadLeft(2, ' '); // Pad with space if single digit
             string destinations = FormatDestinations(elevator.FloorStops);
 
-            Write($"[{elevator.Name}] Floor {elevator.CurrentFloor} {elevatorDirection}  |  Passengers: {passengerCount}  |  Destinations: {destinations}", ConsoleColor.Gray);
+            Write($"[{elevator.Name}]:", ConsoleColor.DarkYellow, false);
+            Write($" Floor {currentFloor} {elevatorDirection}", ConsoleColor.Yellow, false);
+            Write($" |  Passengers:", ConsoleColor.DarkYellow, false);
+            Write($" {passengerCount}", ConsoleColor.Yellow, false);
+            Write($" |  Destinations:", ConsoleColor.DarkYellow, false);
+            Write($" {destinations}", ConsoleColor.Yellow);
         }
+        Write(new string('-', 80), ConsoleColor.DarkCyan);
+    }
 
+    public void DisplayActions()
+    {
+        ConsoleColor actionColor = ConsoleColor.Cyan;
+        Write("Actions:", ConsoleColor.DarkCyan);
+        Write("- Press 'a' to add a passenger to the simulation", actionColor);
+        Write("- Press 'm' to add multiple passengers to the simulation", actionColor);
+        Write("- Press 'q' to exit the simulation", actionColor);
+        //Write(new string('-', 80), ConsoleColor.DarkCyan);
+    }
+
+    public void DisplayLog(IRollingLog rollingLog, int numberEntries)
+    {
+        var logColor = ConsoleColor.DarkYellow;
+        Write(new string('-', 80), ConsoleColor.DarkCyan);
+        Write($"Log:", ConsoleColor.DarkCyan);
+        var entries = rollingLog.GetLastEntries(numberEntries);
+        // append entries to a string
+        var logEntries = new StringBuilder();
+        foreach (var entry in entries)
+        {
+            logEntries.AppendLine($"> {entry}");
+        }
+        Write(logEntries.ToString(), logColor);
         Write(new string('-', 80), ConsoleColor.DarkCyan);
     }
 }

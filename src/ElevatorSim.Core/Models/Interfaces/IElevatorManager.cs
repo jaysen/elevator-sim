@@ -1,4 +1,5 @@
 ﻿using ElevatorSim.Core.Enums;
+using ElevatorSim.Core.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -33,7 +34,7 @@ public interface IElevatorManager
 
     bool AddElevator(IElevator elevator);
 
-    bool AddPassengerToFloor(int floorNum, int destinationFloor);
+    void AddPassengersToFloor(int floorNum, int destinationFloor, int passengerCount = 1);
 
     void DispatchElevatorToFloorAsync(int floor, Direction direction);
 
@@ -44,5 +45,7 @@ public interface IElevatorManager
     void ProcessFloorStop(IElevator elevator, int floorNum);
 
     bool Reset();
+
+    IRollingLog RollingLog { get; set; }
 
 }

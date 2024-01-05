@@ -128,6 +128,8 @@ public class StdElevator : IElevator
         OnStoppedAtFloor(CurrentFloor);
     }
 
+    // this method is not used anymore
+    // TODO: remove
     public async Task MoveToFloorAsync(int floor)
     {
         Status = ElevatorStatus.Moving;

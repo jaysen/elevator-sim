@@ -1,11 +1,14 @@
 using ElevatorSim.Core.Models.Interfaces;
 using ElevatorSim.Core.Enums;
+using ElevatorSim.Core.Services.Interfaces;
+using ElevatorSim.Core.Services;
 
 namespace ElevatorSim.Core.Models;
 
 // Implement the IElevatorManager interface
 public class ElevatorManager : IElevatorManager
 {
+    public IRollingLog RollingLog { get; set; }
 
     public List<IElevator> Elevators { get; }
     public List<IFloor> Floors { get; }
@@ -19,6 +22,7 @@ public class ElevatorManager : IElevatorManager
         Floors = [];
         FloorsRequestingUp = [];
         FloorsRequestingDown = [];
+        RollingLog = new RollingLog(10);
     }
 
     public bool Setup(int floorCount, int elevatorCount, int defaultElevatorCapacity, int defaultElevatorSpeed)
@@ -53,12 +57,19 @@ public class ElevatorManager : IElevatorManager
             return;
         }
         bestElevator.AddFloorStop(floorNum);
+        RollingLog.Add($"{bestElevator.Name} dispatched to floor {floorNum} going {direction}");
     }
 
     public IElevator? GetBestElevatorToDispatch(int floorNum, Direction direction)
     {
+        // get elevators that are not full:
+        var AvailableElevators = Elevators
+            .Where(e => e.CurrentPassengers.Count < e.CapacityLimit)
+            .ToList();
+
+
         // Case 1: Elevators stopped or idle on floorNum
-        var stoppedOrIdleOnFloor = Elevators
+        var stoppedOrIdleOnFloor = AvailableElevators
             .Where(e => e.CurrentFloor == floorNum && (e.Status == ElevatorStatus.Idle || e.Status == ElevatorStatus.Stopped))
             .FirstOrDefault();
 
@@ -68,7 +79,7 @@ public class ElevatorManager : IElevatorManager
         }
 
         // Case 2: Elevators either idle, or moving towards the floor and heading in the right direction
-        var movingTowardsFloorInRightDirection = Elevators
+        var movingTowardsFloorInRightDirection = AvailableElevators
             .Where(e => (e.IsMovingTowardFloor(floorNum) && e.Direction == direction) || (e.Status == ElevatorStatus.Idle && e.FloorStops.Count == 0))
             .OrderBy(e => Math.Abs(e.CurrentFloor - floorNum)) // first closest ones
             .ThenBy(e => e.Direction == direction ? 0 : 1) // Prefer ones moving in the right direction
@@ -89,7 +100,7 @@ public class ElevatorManager : IElevatorManager
 
         //TODO: This case doesn't yet handle the case where the elevator is already needing to turn around and go past the requested floor counter to requested direction.
 
-        var elevatorsTurningAround = Elevators
+        var elevatorsTurningAround = AvailableElevators
             .Select(e => new
             {
                 Elevator = e,
@@ -99,22 +110,44 @@ public class ElevatorManager : IElevatorManager
             })
             .OrderBy(e => e.Distance)
             .ToList();
+        if (elevatorsTurningAround.Count != 0)
+        {
+            return elevatorsTurningAround.FirstOrDefault()?.Elevator;
+        }
 
-        return elevatorsTurningAround.FirstOrDefault()?.Elevator;
+        // TODO: Refine below:
+
+        // catch all: return first available elevator
+        if (AvailableElevators.Count != 0)
+        {
+            return AvailableElevators.FirstOrDefault();
+        }
+
+        // catch all: return first elevator
+        return Elevators.FirstOrDefault(); // this 
+
+        
 
     }
 
+
+    // not in use
     public async Task<bool> MoveElevatorToFloorAsync(IElevator elevator, int floorNum)
     {
         await elevator.MoveToFloorAsync(floorNum);
         return elevator.CurrentFloor == floorNum;
     }
 
-    public bool AddPassengerToFloor(int floorNum, int destinationFloor)
+    public void AddPassengersToFloor(int floorNum, int destinationFloor, int passengerCount = 1)
     {
         var floor = Floors[floorNum];
-        var passenger = new Passenger(destinationFloor);
+        for (int i = 0; i < passengerCount; i++)
+        {
+            var passenger = new Passenger(destinationFloor);
+            floor.AddPassenger(passenger);
+        }
         var direction = floorNum < destinationFloor ? Direction.Up : Direction.Down;
+        RollingLog.Add($"*** Added {passengerCount} passengers to floor {floorNum} going {direction} to floor {destinationFloor} **** ");
         if (direction == Direction.Up)
         {
             DispatchElevatorToFloorAsync(floorNum, Direction.Up);
@@ -125,12 +158,13 @@ public class ElevatorManager : IElevatorManager
             DispatchElevatorToFloorAsync(floorNum, Direction.Down);
             FloorsRequestingDown.Add(floorNum);
         }
-        return floor.AddPassenger(passenger); 
+        
     }
 
     public void ProcessFloorStop(IElevator elevator, int floorNum)
     {
         var floor = Floors[floorNum];
+        RollingLog.Add($"{elevator.Name} stopped at floor {floorNum}");
         floor.AddElevatorToStoppedElevators(elevator);
         elevator.RemoveFloorStop(floorNum);
 
@@ -142,16 +176,29 @@ public class ElevatorManager : IElevatorManager
         }
 
         // Unload passengers
-        elevator.UnloadPassengersForThisStop();
+        var passengersToUnload = elevator.CurrentPassengers.Where(p => p.DestinationFloor == floorNum).Count();
+        if (passengersToUnload > 0)
+        {
+            RollingLog.Add($"{elevator.Name} unloading {passengersToUnload} passengers onto floor {floorNum}");
+            elevator.UnloadPassengersForThisStop();
+        }
+
 
         // Identify which queue of passengers to load into the elevator
         var passengersQueue = direction == Direction.Up ? floor.UpQueue : floor.DownQueue;
 
         // load passengers from queue while lift not full
+        var loaded = 0;
         while (passengersQueue.Count > 0 && elevator.CurrentPassengers.Count < elevator.CapacityLimit)
         {
             elevator.LoadPassenger(passengersQueue.Dequeue());
+            loaded++;
         }
+        if (loaded > 0)
+        {
+            RollingLog.Add($"{elevator.Name} loaded {loaded} passengers from floor {floorNum} going {direction}");
+        }
+
 
         // Prepare elevator to be moved to its NextStop
         elevator.SetBestNextStop();
@@ -160,13 +207,16 @@ public class ElevatorManager : IElevatorManager
         // Request lift if there are still passengers waiting
         if (passengersQueue.Count > 0)
         {
+            RollingLog.Add($"{elevator.Name} couldn't take everyone. {passengersQueue.Count} still left on floor {floorNum} going {direction}");
             DispatchElevatorToFloorAsync(floorNum, direction);
         }
     }
 
     public async Task MoveAllElevators()
     {
-        var tasks = Elevators.Select(e => e.MoveAsync());
+        var tasks = Elevators.Where(e => e.Status == ElevatorStatus.Idle)
+                     .Select(e => e.MoveAsync());
+
         await Task.WhenAll(tasks);
     }
 
