@@ -22,7 +22,6 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
     private int? DestinationFloor { get; set; }
     private string InputError { get; set; }
 
-
     internal async Task RunAsync(string[] args)
     {
         _con.Write("ElevatorSim - v1.0", ConsoleColor.Magenta);
@@ -72,9 +71,11 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
             _con.DisplaySimHeader(sim);
             _con.DisplayElevatorsStatus(sim);
             _con.DisplayActions();
+            _con.DisplayLog(sim.Manager.RollingLog, 10);
             ProcessActionInputs();
             sim.MoveElevators();
         }
+        Console.ResetColor();
     }
 
     private void ProcessActionInputs()
@@ -124,8 +125,8 @@ internal class ConsoleApp(IBuildingSimFactory simFactory)
             if (destination.HasValue && IsValidFloor(destination.Value) && destination != InitialFloor)
             {
                 DestinationFloor = destination;
-                sim.AddPassengersToSim(InitialFloor.Value, DestinationFloor.Value, numPassengers);
-
+                sim.AddPassengersToSim(InitialFloor.Value, DestinationFloor.Value, NumPassengers);
+                
                 // Reset for the next input
                 InputError = "";
                 InitialFloor = null;

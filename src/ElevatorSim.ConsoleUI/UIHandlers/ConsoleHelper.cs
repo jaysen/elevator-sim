@@ -1,5 +1,6 @@
 ﻿using ElevatorSim.Core.Enums;
 using ElevatorSim.Core.Models.Interfaces;
+using ElevatorSim.Core.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -125,6 +126,25 @@ public class ConsoleHelper
         Write("- Press 'm' to add multiple passengers to the simulation", actionColor);
         Write("- Press 'q' to exit the simulation", actionColor);
         Write(" ");
+        //Write(new string('-', 80), ConsoleColor.DarkCyan);
+    }
+
+    public void DisplayLog(IRollingLog rollingLog, int numberEntries)
+    {
+        var logColor = ConsoleColor.DarkYellow;
+        Write("");
         Write(new string('-', 80), ConsoleColor.DarkCyan);
+        Write($"Log:", ConsoleColor.DarkCyan);
+        var entries = rollingLog.GetEntries();
+        // append entries to a string
+        var logEntries = new StringBuilder();
+        foreach (var entry in entries)
+        {
+            logEntries.AppendLine(entry);
+        }
+        Write(logEntries.ToString(), logColor);
+        Write("");
+        Write(new string('-', 80), ConsoleColor.DarkCyan);
+        Write("");
     }
 }
