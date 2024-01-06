@@ -107,12 +107,12 @@ Pressing 'q' exits the simulation.
 ### Simulation Log:
 The simulation log displays the following information:
 
-When a passenger or passengers are added to the simulation
-When an elevator is dispatched to that floor
-When an elevator stops at a floor
-When passengers are loaded onto an elevator
-When passengers are unloaded onto a floor
-When the elevator is full and another elevator needs to be dispatched
+- When a passenger or passengers are added to the simulation. 
+- When an elevator is dispatched to that floor
+- When an elevator stops at a floor
+- When passengers are loaded onto an elevator
+- When passengers are unloaded onto a floor
+- When the elevator is full and another elevator needs to be dispatched
 
 Example log:
 
@@ -132,11 +132,14 @@ Example log:
 
 ```
 
-## Console Application Constraints and Limitations:
-The console application attempts to show a dynamic display of status with a rolling log of events. 
+## Console Application Constraints, Limitations and Known Issues:
 
-**However, as of this version, the console application is limited by the console window size.**
-If the console window is too small for the required display, the display will appear to stutter. 
+### Display Size Issue:
+The console application attempts to show a dynamic display of status with a rolling log of events. 
+To do this, the application redraws the console window dynamically.
+
+**Because of this as of this version, the console application is limited by the console window size.**
+If the console window is too small for the required display, the app will . 
 Because of this, the console application is best viewed in a maximized console window.
 
 With a large number of floors and elevators, a maximized console window may still not be large enough to display the entire simulation.
