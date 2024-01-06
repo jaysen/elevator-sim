@@ -43,60 +43,107 @@ The console application will include the following key features:
     interactions and accurately reflecting elevator movements and status.
 
 
-## Console UI Design
+## Console Application Instructions:
 
-### Sim Setup Prompts on Startup:
-
-- Enter number of Floors:
-- Enter number of Elevators
-- Enter timing: (millisecs/step) - default 1000
-
-
-
-### Example Realtime Console Output - Sim Goal-Driven Approach
-Process:
-- This approach allows the Sim to operate smoothly using less user input.
-- User enters Floor Call giving Passengers and Destinations.
-  - eg: Call: Floor 3, 2 People, Floor 5
-- User can update Passenger Destinations by number of Passengers.
-  - eg: Change: Elevator 1, Floors 5 to 6, 2 People
-- The sim handles the Passenger behaviour and Elevator movement.
-- The Sim will automatically load Passengers into Elevators and move them to their destination floors. 
-
-Output:
-```
------------------------------------------------------------------
-| Elevator Status:                                              |
-|                                                               |
-| [1] Floor 3 ↑ | Passengers: 4 | Destinations: 5(2), 6(2)      |
-| [2] Floor 6 - | Passengers: 0 | Destinations: None            |
-| [3] Floor 1 - | Passengers: 0 | Destinations: None            |
-|                                                               |
-|---------------------------------------------------------------|
-| Elevator Controls:                                            |
-|                                                               |
-| Command Format: [Action] [Details]                            |
-|                                                               |
-| Actions:                                                      |
-| - Call: floor <floor>, <number> people, floor <dest>          |
-| - Cancel: floor <floor> <number> people, floor <dest>         |
-| - Change: elevator <el>, floors <orig> to <new>, <num> people |
-|                                                               |
-|---------------------------------------------------------------|
-| Log:                                                          |
-|                                                               |
-| > Floor 3: Down Call - 4 passengers waiting                   |
-| > Elevator 1: moving to Floor 3                               |
-| > Elevator 1: arrived at Floor 3                              |
-| > Floor 3: Elevator 1: 2 passengers exited                    |
-| > Floor 3: Elevator 1: 2 entered for Floor 5                  |
-| > Floor 3: Elevator 1: 2 entered for Floor 6                  |
-| > Elevator 1: moving to Floor 5                               |
------------------------------------------------------------------
-Command > _
+### Simulation setup:
+On startup, the application will prompt the user to setup the simulation, as below:
 
 ```
-The Commands above are: 
-- Call: floor 3, 2 people, floor 5
-- Call: floor 3, 2 people, floor 6
+Simulation setup:
+Enter the number of floors:
+Enter the number of elevators
+Enter the default elevator capacity
+Enter the default elevator speed (millisecs/step):
+```
+
+### Simulation Display:
+Once the simulation is setup, the application will display the following information:
+
+
+```
+-----------------------------------------------------------------
+Elevator Status:
+[Elevator 1] Floor 3 ↑ | Passengers: 4 | Destinations: 5,6      
+[Elevator 2] Floor 2 - | Passengers: 0 | Destinations: None
+[Elevator 3] Floor 1 - | Passengers: 0 | Destinations: None
+-----------------------------------------------------------------
+Actions:
+- Press 'a' to add a passenger to the simulation
+- Press 'm' to add multiple passengers to the simulation
+- Press 'q' to exit the simulation
+-----------------------------------------------------------------
+Log:
+
+-----------------------------------------------------------------
+```
+
+### Simulation Actions:
+The user can interact with the simulation by pressing the following keys:
+- Press 'a' to add a passenger to the simulation
+- Press 'm' to add multiple passengers to the simulation
+- Press 'q' to exit the simulation
+
+#### Adding a passenger:
+When the user presses 'a' to add a passenger, the application will prompt the user to enter the passenger's starting floor and destination floor, as below:
+
+```
+Enter the passenger's origin floor number:
+Enter the destination floor number:
+```
+
+#### Adding multiple passengers:
+When the user presses 'm' to add multiple passengers, the application will prompt the user to enter the number of passengers to add, then prompt the user to enter the passenger's starting floor and destination floor for each passenger:
+
+```
+Enter the number of passengers to add:
+Enter the passenger's origin floor number:
+Enter the destination floor number:
+```
+
+#### Exiting the simulation:
+Pressing 'q' exits the simulation.
+
+
+### Simulation Log:
+The simulation log displays the following information:
+
+When a passenger or passengers are added to the simulation
+When an elevator is dispatched to that floor
+When an elevator stops at a floor
+When passengers are loaded onto an elevator
+When passengers are unloaded onto a floor
+When the elevator is full and another elevator needs to be dispatched
+
+Example log:
+
+```
+> *** Added 20 passengers to floor 2 going Up to floor 30 ****
+> Elevator 3 dispatched to floor 2 going Up
+> Elevator 3 stopped at floor 2
+> Elevator 3 loaded 10 passengers from floor 2 going Up
+> Elevator 3 couldn't take everyone. 10 still left on floor 2 going Up
+> Elevator 4 dispatched to floor 2 going Up
+> Elevator 4 stopped at floor 2
+> Elevator 4 loaded 10 passengers from floor 2 going Up
+> Elevator 3 stopped at floor 30
+> Elevator 3 unloading 10 passengers onto floor 30
+> Elevator 4 stopped at floor 30
+> Elevator 4 unloading 10 passengers onto floor 30
+
+```
+
+## Console Application Constraints and Limitations:
+The console application attempts to show a dynamic display of status with a rolling log of events. 
+
+**However, as of this version, the console application is limited by the console window size.**
+If the console window is too small for the required display, the display will appear to stutter. 
+Because of this, the console application is best viewed in a maximized console window.
+
+With a large number of floors and elevators, a maximized console window may still not be large enough to display the entire simulation.
+This is a known issue and will be addressed in future versions.
+
+
+## Dispatching Strategies:
+As of now there is only one dispatching strategy implemented: **Nearest Elevator Dispatching**.
+Future versions will include additional dispatching strategies.
 

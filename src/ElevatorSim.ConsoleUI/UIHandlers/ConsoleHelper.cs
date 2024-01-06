@@ -130,7 +130,6 @@ public class ConsoleHelper
         Write(new string('-', 80), ConsoleColor.DarkCyan);
         Write($"Log:", ConsoleColor.DarkCyan);
         var entries = rollingLog.GetLastEntries(numberEntries);
-        // append entries to a string
         var logEntries = new StringBuilder();
         foreach (var entry in entries)
         {
