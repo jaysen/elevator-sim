@@ -138,15 +138,18 @@ Example log:
 The console application attempts to show a dynamic display of status with a rolling log of events. 
 To do this, the application redraws the console window dynamically.
 
-**Because of this as of this version, the console application is limited by the console window size.**
-If the console window is too small for the required display, the app will . 
+**Because of this as of this version, the console application is limited by the console window size**
+
+If the console window is too small for the required display, the app will not display properly. 
 Because of this, the console application is best viewed in a maximized console window.
 
-With a large number of floors and elevators, a maximized console window may still not be large enough to display the entire simulation.
-This is a known issue and will be addressed in future versions.
+With a large number of elevators, a maximized console window may still not be large enough to display the entire simulation.
+
+**This is a known issue and will be addressed in an upcoming version**
 
 
 ## Dispatching Strategies:
-As of now there is only one dispatching strategy implemented: **Nearest Elevator Dispatching**.
+As of now there is only one dispatching strategy implemented: **Nearest Elevator Dispatching**
+
 Future versions will include additional dispatching strategies.
 
